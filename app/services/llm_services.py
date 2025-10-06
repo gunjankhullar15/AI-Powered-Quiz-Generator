@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 
 def generate_llm_output(query: str, results: str):
+
+    load_dotenv()  # Load environment variables from .env file
+
     model = ChatGroq(
         api_key=os.getenv("GROQ_API_KEY"),  # 👉 move this to .env
         model_name="llama-3.3-70b-versatile"
@@ -14,6 +17,7 @@ def generate_llm_output(query: str, results: str):
     topic = "rag"
     sch_n_questions = 3
     truefalse_n_questions = 5
+    fillups_n_questions = 3
 
 
     mcq_prompt = f"""
@@ -157,6 +161,47 @@ IMPORTANT : the output format only in json format only and do not include any th
 
 """
     
+    fillups_prompt = f"""
+
+Consider you are the expert of creating fill in the blanks type question. you task is to create the {fillups_n_questions} number of fill in the blanks question from the given data.
+
+the data is :
+{results}
+
+the level of the queston should be {level}
+
+you have to create the questions for {n_people}  people in the following format :
+
+example output format:
+
+people : 1
+[
+question 1 : [question]
+answer : [option]
+explaination : [explaination]
+
+question 2 : [question]
+answer : [option]
+explaination : [explaination]
+]
+
+people : 2
+[
+question 1 : [question]
+answer : [option]
+explaination : [explaination]
+
+question 2 : [question]
+answer : [option]
+explaination : [explaination]
+]
+
+the question for different people should not be same. means the question should be unique for each person.
+
+IMPORTANT : the output format only in json format only and do not include any thing extra in it.
+
+"""
+    
     response = model.invoke(mcq_prompt)
     allmcq_questions = response.content
 
@@ -183,6 +228,9 @@ Scenario-based Questions Data:
 
 True/False Questions Data:
 {alltruefalse_questions}
+
+fill in the blanks Questions Data:
+{fillups_prompt}
 
 Now, using the above data, generate a **structured JSON** in the following format:
 
@@ -217,7 +265,16 @@ Now, using the above data, generate a **structured JSON** in the following forma
       "answer": "True",
       "explanation": "Supervised learning depends on labeled datasets to train models accurately."
     }}
-  ]
+  ],
+
+  "question type": "fill in the blanks",
+    "all fill in the blanks questions": [
+        {{
+        "question": "In machine learning, ________ is used to evaluate the performance of a model.",
+        "answer": "cross-validation",
+        "explanation": "Cross-validation helps in assessing how the results of a statistical analysis will generalize to an independent dataset."
+        }}
+    ]
 }}
 
 IMPORTANT RULES:
