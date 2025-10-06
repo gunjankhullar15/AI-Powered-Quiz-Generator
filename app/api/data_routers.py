@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, HTTPException
 import os
-from app.services.pdf_services import process_folder
+from app.services.data_services import process_folder
 from app.services.weaviate_services import client
 
 router = APIRouter()
