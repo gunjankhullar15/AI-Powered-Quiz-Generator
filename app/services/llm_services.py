@@ -8,7 +8,6 @@ def generate_llm_output(topic: str,
                         sch_questions: int,
                         truefalse_questions: int,
                         fillups_questions: int,
-                        question_level: str,
                         total_people: int,
                         match_questions: int):
  
@@ -20,7 +19,6 @@ def generate_llm_output(topic: str,
     )
  
     mcq_n_questions = mcq_questions
-    level = question_level
     n_people = total_people
     # topic = "rag"
     sch_n_questions = sch_questions
@@ -28,18 +26,8 @@ def generate_llm_output(topic: str,
     fillups_n_questions = fillups_questions
     match_n_questions = match_questions    
    
-    prompt = f"""
- 
-give me proper answer for the following question on the bases of given content:
-question : {topic}
- 
- 
-content : {results}
- 
-"""
+    
    
- 
- 
     unified_prompt = f"""
 You are an expert question generator specializing in multiple formats of assessment questions.  
 Your task is to create the following types of questions for **{n_people} different people** based on the given content:
@@ -58,7 +46,7 @@ Topic: {topic}
 Content:
 {results}
  
-Level of difficulty: {level}
+Level of difficulty: **Easy**
  
 ---
  
@@ -86,7 +74,7 @@ Level of difficulty: {level}
       "option 3": "To define the set of assumptions sufficient to deduce conclusions",
       "option 4": "To minimize training errors",
       "answer": "To reduce the complexity of the hypothesis space",
-      "explanation": "Inductive bias restricts the hypothesis space, guiding learning towards more generalizable patterns."
+      "Source": "content above"
     }}
   ],
  
@@ -104,7 +92,7 @@ Level of difficulty: {level}
       "option 1": "True",
       "option 2": "False",
       "answer": "True",
-      "explanation": "Supervised learning depends on labeled datasets to train models accurately."
+      "Source": "content above"
     }}
   ],
  
@@ -113,7 +101,7 @@ Level of difficulty: {level}
     {{
       "question": "In machine learning, ________ is used to evaluate the performance of a model.",
       "answer": "cross-validation",
-      "explanation": "Cross-validation helps assess how results generalize to an independent dataset."
+      "Source": "LLM knowledge"
     }}
   ],
  
@@ -131,7 +119,7 @@ Level of difficulty: {level}
         "Unsupervised Learning": "Finds hidden patterns in unlabeled data",
         "Reinforcement Learning": "Learns by receiving rewards or penalties"
       }},
-      "explanation": "Each learning type is defined by how it uses data and feedback."
+      "Source": "LLM knowledge"
     }}
   ]
 }}
@@ -142,24 +130,30 @@ Level of difficulty: {level}
  
 **1. MCQs**
 - Create {mcq_n_questions} MCQs per person.
-- Each MCQ should have 4 options, one correct answer, and a short explanation.
+- Each MCQ should have 4 options, one correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
+- Each question should have question number.
  
 **2. Scenario-based Questions**
 - Create {sch_n_questions} scenario-based questions per person.
 - Each should present a real-world problem and ask for an applicable concept or solution.
+- Each question should have question number.
  
 **3. True/False Questions**
 - Create {truefalse_n_questions} per person.
-- Include two options ("True", "False"), a correct answer, and an explanation.
+- Include two options ("True", "False"), a correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
+- Each question should have question number.
  
 **4. Fill in the Blanks**
 - Create {fillups_n_questions} per person.
-- Include one blank, the correct answer, and an explanation.
+- Include one blank, the correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
+- Each question should have question number.
  
 **5. Match the Following**
 - Create {match_n_questions} match-the-following questions per person.
-- Each should contain a list of items to match with corresponding options.
-- Include answers and explanations.
+- Each should contain a list of items to match with corresponding options and have total 4 match the following per question.
+- Include answers and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
+- In the question you have to suffle the pairs so that the answer will not come in front of the pair in the question.
+- Each question should have question number.
 - Format must follow JSON strictly as shown above.
  
 ---
@@ -172,4 +166,6 @@ Do **not** include anything outside the JSON.
    
  
     response1 = model.invoke(unified_prompt)
-    return {"response": response1.content}  
+    return {"response": response1.content}
+ 
+ 
