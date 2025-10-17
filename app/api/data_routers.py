@@ -5,6 +5,7 @@ from app.services.weaviate_services import client
 
 router = APIRouter()
 
+
 @router.get("/list-preview/", response_model=str)
 def list_pdf_preview(path: str = Query(..., description="Path to the local folder")):
     if not os.path.isdir(path):

@@ -1,7 +1,7 @@
 from langchain_groq import ChatGroq
 import os
 from dotenv import load_dotenv
-
+ 
 def generate_llm_output(topic: str,
                         results: str,
                         mcq_questions: int,
@@ -9,63 +9,74 @@ def generate_llm_output(topic: str,
                         truefalse_questions: int,
                         fillups_questions: int,
                         question_level: str,
-                        total_people: int):
-
+                        total_people: int,
+                        match_questions: int):
+ 
     load_dotenv()  # Load environment variables from .env file
-
+ 
     model = ChatGroq(
         api_key=os.getenv("GROQ_API_KEY"),  # 👉 move this to .env
         model_name="llama-3.3-70b-versatile"
     )
-
+ 
     mcq_n_questions = mcq_questions
     level = question_level
     n_people = total_people
     # topic = "rag"
     sch_n_questions = sch_questions
     truefalse_n_questions = truefalse_questions
-    fillups_n_questions = fillups_questions    
-    
+    fillups_n_questions = fillups_questions
+    match_n_questions = match_questions    
+   
     prompt = f"""
-
+ 
 give me proper answer for the following question on the bases of given content:
 question : {topic}
-
-
+ 
+ 
 content : {results}
-
+ 
 """
-    
-
-
+   
+ 
+ 
     unified_prompt = f"""
 You are an expert question generator specializing in multiple formats of assessment questions.  
-Your task is to create **{mcq_n_questions} MCQs**, **{sch_n_questions} scenario-based questions**, **{truefalse_n_questions} true/false questions**, and **{fillups_n_questions} fill-in-the-blanks questions** for **{n_people} different people** based on the given content.
-
+Your task is to create the following types of questions for **{n_people} different people** based on the given content:
+ 
+- **{mcq_n_questions} MCQs**
+- **{sch_n_questions} scenario-based questions**
+- **{truefalse_n_questions} true/false questions**
+- **{fillups_n_questions} fill-in-the-blanks questions**
+- **{match_n_questions} match-the-following questions**
+ 
 ---
+ 
 ### Context:
 Topic: {topic}
-
+ 
 Content:
 {results}
-
+ 
 Level of difficulty: {level}
+ 
 ---
-
+ 
 ### Output Instructions:
 1. Generate **unique** questions for each person — no repetition between people.
-2. The **output must be a valid JSON only** (no markdown, no explanations).
+2. The **output must be valid JSON only** (no markdown, no explanations outside JSON).
 3. Follow the **exact JSON structure** shown below.
-4. Ensure all string values are wrapped in **double quotes**.
-5. Include clear and accurate **answers** and **explanations**.
+4. All string values must be wrapped in **double quotes**.
+5. Include accurate **answers** and **explanations**.
 6. Skip any section if there’s insufficient data — do not leave blank or null fields.
-
+ 
 ---
-
+ 
 ### Output JSON Format Example:
-
+ 
 {{
   "people": 1,
+ 
   "question type": "mcq",
   "all mcq questions": [
     {{
@@ -78,14 +89,14 @@ Level of difficulty: {level}
       "explanation": "Inductive bias restricts the hypothesis space, guiding learning towards more generalizable patterns."
     }}
   ],
-
+ 
   "question type": "scenario",
   "all scenario questions": [
     {{
       "question": "Imagine a company wants to use AI to predict employee turnover. What data should they collect and why?"
     }}
   ],
-
+ 
   "question type": "true/false",
   "all true/false questions": [
     {{
@@ -96,7 +107,7 @@ Level of difficulty: {level}
       "explanation": "Supervised learning depends on labeled datasets to train models accurately."
     }}
   ],
-
+ 
   "question type": "fill in the blanks",
   "all fill in the blanks questions": [
     {{
@@ -104,36 +115,61 @@ Level of difficulty: {level}
       "answer": "cross-validation",
       "explanation": "Cross-validation helps assess how results generalize to an independent dataset."
     }}
+  ],
+ 
+  "question type": "match the following",
+  "all match the following questions": [
+    {{
+      "question 1": "Match the following AI concepts with their descriptions.",
+      "pairs": {{
+        "Supervised Learning": "Uses labeled data to train a model",
+        "Unsupervised Learning": "Finds hidden patterns in unlabeled data",
+        "Reinforcement Learning": "Learns by receiving rewards or penalties"
+      }},
+      "answer": {{
+        "Supervised Learning": "Uses labeled data to train a model",
+        "Unsupervised Learning": "Finds hidden patterns in unlabeled data",
+        "Reinforcement Learning": "Learns by receiving rewards or penalties"
+      }},
+      "explanation": "Each learning type is defined by how it uses data and feedback."
+    }}
   ]
 }}
-
+ 
 ---
-
+ 
 ### Requirements per Question Type:
-
+ 
 **1. MCQs**
 - Create {mcq_n_questions} MCQs per person.
-- Each MCQ should have 4 options, one correct answer, and a brief explanation.
-
+- Each MCQ should have 4 options, one correct answer, and a short explanation.
+ 
 **2. Scenario-based Questions**
 - Create {sch_n_questions} scenario-based questions per person.
-- Each question should describe a real-world situation and ask what technology/method/concept to apply.
-
+- Each should present a real-world problem and ask for an applicable concept or solution.
+ 
 **3. True/False Questions**
-- Create {truefalse_n_questions} questions per person.
-- Include two options ("True", "False"), the correct answer, and a short explanation.
-
+- Create {truefalse_n_questions} per person.
+- Include two options ("True", "False"), a correct answer, and an explanation.
+ 
 **4. Fill in the Blanks**
-- Create {fillups_n_questions} questions per person.
-- Each should have one blank and a correct answer with a brief explanation.
-
+- Create {fillups_n_questions} per person.
+- Include one blank, the correct answer, and an explanation.
+ 
+**5. Match the Following**
+- Create {match_n_questions} match-the-following questions per person.
+- Each should contain a list of items to match with corresponding options.
+- Include answers and explanations.
+- Format must follow JSON strictly as shown above.
+ 
 ---
-
+ 
 ### Final Instruction:
-Return only the final structured JSON (for both people, each having all four question types).  
-Do **not** include any text outside the JSON.
+Return only the **final structured JSON** for all people — each containing all five question types.  
+Do **not** include anything outside the JSON.
 """
-    
-
+ 
+   
+ 
     response1 = model.invoke(unified_prompt)
-    return {"response": response1.content}
+    return {"response": response1.content}  
