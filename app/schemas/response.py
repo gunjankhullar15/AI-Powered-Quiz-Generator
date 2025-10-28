@@ -13,5 +13,9 @@ class EmployeeResponseCreate(EmployeeResponseBase):
     pass
 
 class EmployeeResponseResponse(EmployeeResponseBase):
-    e_id: int
+    emp_id: int
+    employee_name: str
+    test_id: int
+    score: Decimal
+    
     model_config = ConfigDict(from_attributes=True)

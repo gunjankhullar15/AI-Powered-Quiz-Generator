@@ -6,7 +6,7 @@ from app.utils.database import get_db
 
 router = APIRouter(prefix="/weightages")
 
-@router.get("/get-weightages", response_model=list[WeightageResponse])
+@router.get("/get-weightages", response_model=list[WeightageResponse],description="Get all weightages of question types")
 async def get_weightages(db: AsyncSession = Depends(get_db)):
     from sqlalchemy import select
     

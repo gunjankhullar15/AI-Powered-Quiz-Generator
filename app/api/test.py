@@ -44,7 +44,7 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
     await db.refresh(new_test)
     return new_test
 
-@router.get("/get-test/{test_id}")
+@router.get("/get-test/{test_id}",description="Get test by ID for users")
 async def get_test(test_id: int, db: AsyncSession = Depends(get_db)):
     from sqlalchemy import select
     
@@ -56,7 +56,7 @@ async def get_test(test_id: int, db: AsyncSession = Depends(get_db)):
     
     return test
 
-@router.get("/get-all-tests")
+@router.get("/get-all-tests",description="Get all tests for admin")
 async def get_all_tests(db: AsyncSession = Depends(get_db)):
     from sqlalchemy import select
     
@@ -70,7 +70,8 @@ async def get_all_tests(db: AsyncSession = Depends(get_db)):
             "t_id": test.t_id,
             "test_name": test.test_name,
             "due_date": test.due_date,
-            "test_url": test.test_url
+            "test_url": test.test_url,
+            "creattion_date": test.created_at
         }
         for test in tests
     ]
