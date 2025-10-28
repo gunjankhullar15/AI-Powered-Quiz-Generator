@@ -1,8 +1,8 @@
-"""Add new table
+"""Initial migration
 
-Revision ID: 3a54fa3f29ab
+Revision ID: fdb2d8c13f71
 Revises: 
-Create Date: 2025-10-15 12:41:51.557192
+Create Date: 2025-10-28 18:22:47.572125
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3a54fa3f29ab'
+revision: str = 'fdb2d8c13f71'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,19 +24,19 @@ def upgrade() -> None:
     op.create_table('employees',
     sa.Column('emp_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('full_name', sa.String(length=100), nullable=False),
-    sa.Column('department', sa.String(length=100), nullable=False),
-    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('emp_code', sa.String(length=50), nullable=False),
     sa.PrimaryKeyConstraint('emp_id'),
-    sa.UniqueConstraint('email')
+    sa.UniqueConstraint('emp_code')
     )
     op.create_index(op.f('ix_employees_emp_id'), 'employees', ['emp_id'], unique=False)
     op.create_table('tests',
     sa.Column('t_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('topic', sa.String(length=200), nullable=False),
     sa.Column('test_name', sa.String(length=150), nullable=False),
-    sa.Column('due_date', sa.DateTime(), nullable=False),
+    sa.Column('test_url', sa.String(length=2083), nullable=True),
+    sa.Column('description', sa.String(length=500), nullable=True),
+    sa.Column('due_date', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.Column('no_of_mcq', sa.Integer(), nullable=True),
-    sa.Column('no_of_short_ans', sa.Integer(), nullable=True),
     sa.Column('no_scenario_based', sa.Integer(), nullable=True),
     sa.Column('no_of_fill_blanks', sa.Integer(), nullable=True),
     sa.Column('no_of_true_false', sa.Integer(), nullable=True),
@@ -44,10 +44,11 @@ def upgrade() -> None:
     sa.Column('max_marks', sa.DECIMAL(precision=6, scale=2), nullable=False),
     sa.Column('total_questions', sa.Integer(), nullable=False),
     sa.Column('passing_marks', sa.DECIMAL(precision=5, scale=2), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('no_of_people', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.CheckConstraint('duration > 0'),
     sa.CheckConstraint('max_marks > 0'),
-    sa.CheckConstraint('total_questions = no_of_mcq + no_of_short_ans + no_scenario_based + no_of_fill_blanks + no_of_true_false'),
+    sa.CheckConstraint('total_questions = no_of_mcq  + no_scenario_based + no_of_fill_blanks + no_of_true_false'),
     sa.PrimaryKeyConstraint('t_id')
     )
     op.create_index(op.f('ix_tests_t_id'), 'tests', ['t_id'], unique=False)
@@ -64,8 +65,6 @@ def upgrade() -> None:
     sa.Column('q_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('t_id', sa.Integer(), nullable=False),
     sa.Column('question_statement_options', sa.Text(), nullable=False),
-    sa.Column('q_type', sa.String(length=50), nullable=False),
-    sa.Column('correct_answers', sa.Text(), nullable=False),
     sa.ForeignKeyConstraint(['t_id'], ['tests.t_id'], ),
     sa.PrimaryKeyConstraint('q_id')
     )
@@ -75,7 +74,7 @@ def upgrade() -> None:
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('score', sa.Integer(), nullable=False),
     sa.Column('emp_id', sa.Integer(), nullable=False),
-    sa.Column('t_id', sa.Integer(), nullable=True),
+    sa.Column('t_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['emp_id'], ['employees.emp_id'], ),
     sa.ForeignKeyConstraint(['t_id'], ['tests.t_id'], ),
     sa.PrimaryKeyConstraint('r_id')
@@ -86,7 +85,6 @@ def upgrade() -> None:
     sa.Column('t_id', sa.Integer(), nullable=False),
     sa.Column('emp_id', sa.Integer(), nullable=False),
     sa.Column('date', sa.DateTime(), nullable=False),
-    sa.Column('completion_status', sa.Enum('Completed', 'Not Completed', name='completion_status'), nullable=True),
     sa.ForeignKeyConstraint(['emp_id'], ['employees.emp_id'], ),
     sa.ForeignKeyConstraint(['t_id'], ['tests.t_id'], ),
     sa.PrimaryKeyConstraint('ta_id')

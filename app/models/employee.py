@@ -7,8 +7,7 @@ class Employee(Base):
     
     emp_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     full_name = Column(String(100), nullable=False)
-    department = Column(String(100), nullable=False)
-    email = Column(String(255), nullable=False, unique=True)
+    emp_code = Column(String(50), unique=True, nullable=False)
     
     # Relationships
     test_assignments = relationship("TestAssignment", back_populates="employee")

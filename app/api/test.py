@@ -12,7 +12,6 @@ router = APIRouter(prefix="/tests")  # Add this line
 async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
     total_questions = (
         test.no_of_mcq
-        + test.no_of_short_ans
         + test.no_scenario_based
         + test.no_of_fill_blanks
         + test.no_of_true_false
@@ -28,7 +27,6 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
         test_name=test.test_name,
         due_date=test.due_date,
         no_of_mcq=test.no_of_mcq,
-        no_of_short_ans=test.no_of_short_ans,
         no_scenario_based=test.no_scenario_based,
         no_of_fill_blanks=test.no_of_fill_blanks,
         no_of_true_false=test.no_of_true_false,

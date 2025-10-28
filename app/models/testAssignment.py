@@ -9,7 +9,7 @@ class TestAssignment(Base):
     t_id = Column(Integer, ForeignKey("tests.t_id"), nullable=False)
     emp_id = Column(Integer, ForeignKey("employees.emp_id"), nullable=False)
     date = Column(DateTime, nullable=False)
-    completion_status = Column(Enum('Completed', 'Not Completed', name='completion_status'), default='Not Completed')
+   
     
     # Relationships
     test = relationship("Test", back_populates="test_assignments")
