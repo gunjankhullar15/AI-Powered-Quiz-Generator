@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, HTTPException
 import os
 from app.services.data_services import process_folder
-from app.services.weaviate_services import client
+from app.services.weaviate_services import client, clear_weaviate_data
 from app.services.article_services import process_article
 
 router = APIRouter()
@@ -37,3 +37,11 @@ def list_article_preview(url: str = Query(..., description="URL of the article t
         return process_article(url)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.delete("/clear-weaviate/", response_model=str)
+def clear_weaviate():
+    """
+    Clear all data from the Weaviate 'Document' collection.
+    """
+    return clear_weaviate_data(client)

@@ -30,7 +30,10 @@ __pycache__/
 Thumbs.db
 
 # Logs
+/logs/
 *.log
+
+!app/logs/
 
 # Byte-compiled / optimized / DLL files
 *.so
