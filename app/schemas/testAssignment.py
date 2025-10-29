@@ -2,10 +2,10 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class TestAssignmentBase(BaseModel):
-    t_id: int
+    q_id: int
     emp_id: int
-    date: datetime
-    completion_status: str = 'Not Completed'
+
+
 
 class TestAssignmentCreate(TestAssignmentBase):
     pass

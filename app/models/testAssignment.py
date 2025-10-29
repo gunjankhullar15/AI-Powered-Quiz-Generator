@@ -6,11 +6,11 @@ class TestAssignment(Base):
     __tablename__ = "test_assignments"
     
     ta_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
-    t_id = Column(Integer, ForeignKey("tests.t_id"), nullable=False)
+    q_id = Column(Integer, ForeignKey("questions.q_id"), nullable=False)
     emp_id = Column(Integer, ForeignKey("employees.emp_id"), nullable=False)
-    date = Column(DateTime, nullable=False)
+    
    
     
     # Relationships
-    test = relationship("Test", back_populates="test_assignments")
+    question = relationship("Question", back_populates="test_assignments")
     employee = relationship("Employee", back_populates="test_assignments")

@@ -3,8 +3,7 @@ from pydantic import BaseModel, ConfigDict
 class QuestionBase(BaseModel):
     t_id: int
     question_statement_options: str
-    q_type: str
-    correct_answers: str
+    assigned: bool = False
 
 class QuestionCreate(QuestionBase):
     pass
