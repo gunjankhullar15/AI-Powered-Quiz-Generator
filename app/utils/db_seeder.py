@@ -20,7 +20,6 @@ async def seed_fixed_weightages():
             # Fixed global weightage values (same for all tests)
             fixed_weightages = [
                 {'question_type': 'MCQ', 'weightage': 1.00},
-                {'question_type': 'Short_Answer', 'weightage': 2.00},
                 {'question_type': 'Scenario_Based', 'weightage': 3.00},
                 {'question_type': 'Fill_Blanks', 'weightage': 1.50},
                 {'question_type': 'True_False', 'weightage': 0.50}

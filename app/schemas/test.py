@@ -7,9 +7,8 @@ class TestBase(BaseModel):
     topic: str
     test_name: str
     description: str
-    due_date: datetime  # Should be timezone-aware
+    due_date: datetime  
     no_of_mcq: int = 0
-    no_of_short_ans: int = 0
     no_scenario_based: int = 0
     no_of_fill_blanks: int = 0
     no_of_true_false: int = 0

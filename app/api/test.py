@@ -24,6 +24,7 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
 
     new_test = Test(
         topic=test.topic,
+        description=test.description,
         test_name=test.test_name,
         due_date=test.due_date,
         no_of_mcq=test.no_of_mcq,
