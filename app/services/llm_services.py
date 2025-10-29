@@ -1,6 +1,9 @@
 from langchain_groq import ChatGroq
 import os
 from dotenv import load_dotenv
+from app.logs.logger_config import setup_logger
+ 
+logger = setup_logger(__name__)
  
 def generate_llm_output(topic: str,
                         results: str,
@@ -8,15 +11,17 @@ def generate_llm_output(topic: str,
                         sch_questions: int,
                         truefalse_questions: int,
                         fillups_questions: int,
-                        total_people: int,
-                        match_questions: int):
+                        total_people: int
+                        #match_questions: int
+                        ):
  
     load_dotenv()  # Load environment variables from .env file
- 
+    logger.info("Initializing LLM model...")
     model = ChatGroq(
         api_key=os.getenv("GROQ_API_KEY"),  # 👉 move this to .env
         model_name="llama-3.3-70b-versatile"
     )
+    logger.info("LLM model initialized successfully.")
  
     mcq_n_questions = mcq_questions
     n_people = total_people
@@ -24,9 +29,9 @@ def generate_llm_output(topic: str,
     sch_n_questions = sch_questions
     truefalse_n_questions = truefalse_questions
     fillups_n_questions = fillups_questions
-    match_n_questions = match_questions    
+    #match_n_questions = match_questions    
    
-    
+   
    
     unified_prompt = f"""
 You are an expert question generator specializing in multiple formats of assessment questions.  
@@ -36,7 +41,7 @@ Your task is to create the following types of questions for **{n_people} differe
 - **{sch_n_questions} scenario-based questions**
 - **{truefalse_n_questions} true/false questions**
 - **{fillups_n_questions} fill-in-the-blanks questions**
-- **{match_n_questions} match-the-following questions**
+ 
  
 ---
  
@@ -105,23 +110,6 @@ Level of difficulty: **Easy**
     }}
   ],
  
-  "question type": "match the following",
-  "all match the following questions": [
-    {{
-      "question 1": "Match the following AI concepts with their descriptions.",
-      "pairs": {{
-        "Supervised Learning": "Uses labeled data to train a model",
-        "Unsupervised Learning": "Finds hidden patterns in unlabeled data",
-        "Reinforcement Learning": "Learns by receiving rewards or penalties"
-      }},
-      "answer": {{
-        "Supervised Learning": "Uses labeled data to train a model",
-        "Unsupervised Learning": "Finds hidden patterns in unlabeled data",
-        "Reinforcement Learning": "Learns by receiving rewards or penalties"
-      }},
-      "Source": "LLM knowledge"
-    }}
-  ]
 }}
  
 ---
@@ -148,13 +136,7 @@ Level of difficulty: **Easy**
 - Include one blank, the correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
 - Each question should have question number.
  
-**5. Match the Following**
-- Create {match_n_questions} match-the-following questions per person.
-- Each should contain a list of items to match with corresponding options and have total 4 match the following per question.
-- Include answers and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
-- In the question you have to suffle the pairs so that the answer will not come in front of the pair in the question.
-- Each question should have question number.
-- Format must follow JSON strictly as shown above.
+ 
  
 ---
  
@@ -164,8 +146,7 @@ Do **not** include anything outside the JSON.
 """
  
    
- 
+    logger.info("Sending prompt to LLM...")
     response1 = model.invoke(unified_prompt)
+    logger.info("LLM response received.")
     return {"response": response1.content}
- 
- 

@@ -1,6 +1,10 @@
 import os
 from app.utils.splitter import get_splitter
 from app.services.weaviate_services import transformer
+from app.logs.logger_config import setup_logger
+ 
+logger = setup_logger(__name__)
+ 
  
  
 def process_folder(path: str, client):
@@ -10,6 +14,7 @@ def process_folder(path: str, client):
     supported_files = [f for f in files if os.path.splitext(f)[1].lower() in supported_ext]
  
     if not supported_files:
+        logger.warning("No supported files found.")
         return "No supported files (PDF, DOCX, TXT, PPTX) found in the folder."
  
     doc_collection = client.collections.get("Document")
@@ -27,6 +32,7 @@ def process_folder(path: str, client):
         text_chunks = [chunk.page_content for chunk in chunks]
  
         # Generate embeddings
+        logger.info(f"Generating embeddings for {len(text_chunks)} chunks...")
         embeddings = transformer.encode(text_chunks).tolist()
  
         # Store in Weaviate
