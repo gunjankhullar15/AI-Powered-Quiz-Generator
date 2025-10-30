@@ -6,6 +6,7 @@ from app.services.llm_services import generate_llm_output
 from app.services.weaviate_services import search_in_weaviate
 from app.logs.logger_config import setup_logger
 from app.services.response_cleaner import clean_llm_response
+from app.schemas.test import TestCreate
  
 logger = setup_logger(__name__)
 router = APIRouter()
@@ -43,7 +44,7 @@ def get_llm_output(
         try:
             if useall_content:
                 logger.info("Fetching all PDF content from Weaviate")
-                search_results = search_in_weaviate("*")   # ✅ Fetch all content
+                search_results = search_in_weaviate("*")   #  Fetch all content
                 print(search_results)
             else:
                 logger.info(f"Fetching topic-specific chunks for topic: {topic}")
@@ -66,7 +67,7 @@ def get_llm_output(
         else:
             combined_text = str(search_results)
  
-        # ✅ Step 4: Generate questions
+        #  Step 4: Generate questions
         raw_output = generate_llm_output(
             topic if topic else "All Content",
             combined_text,
@@ -77,8 +78,23 @@ def get_llm_output(
             total_people,
             #match_questions
         )
+
+        clean_data = clean_llm_response(raw_output)
+        output_dict = {}
+        for key, value in clean_data["response"].items():
+            if key.startswith("person"):
+                # rename key with underscore instead of space
+                person_key = key.replace(" ", "_")
+                output_dict[person_key] = value
+
+        print(len(output_dict))
+        print(type(output_dict))
+        print(output_dict)
+
+        for key in output_dict:
+          print(key)
  
-        return clean_llm_response(raw_output)
+        return clean_data
  
    
     except Exception as e:

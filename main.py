@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from app.api import data_routers, llm_routers, test,weightage,employee
+from app.api import data_routers, llm_routers, test,weightage,employee,questions
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils.db_seeder import seed_fixed_weightages
 
@@ -32,3 +32,4 @@ app.include_router(llm_routers.router, tags=["LLM"])
 app.include_router(test.router, tags=["Tests"])
 app.include_router(weightage.router, tags=["Weightages"])
 app.include_router(employee.router, tags=["Employees"])
+app.include_router(questions.router,tags=["Questions"])

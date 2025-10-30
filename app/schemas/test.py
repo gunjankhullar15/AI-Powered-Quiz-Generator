@@ -15,6 +15,7 @@ class TestBase(BaseModel):
     duration: int
     max_marks: Decimal
     passing_marks: Decimal
+    no_of_people: int = 0
     created_at: datetime  # Should be timezone-aware
 
     model_config = ConfigDict(from_attributes=True)
