@@ -1,17 +1,20 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, File, UploadFile
 import os
 from app.services.data_services import process_folder
 from app.services.weaviate_services import client, clear_weaviate_data
 from app.services.article_services import process_article
+from app.services.process_files import handle_multiple_files
 
 router = APIRouter()
  
-@router.get("/list-preview/", response_model=str)
-def list_pdf_preview(path: str = Query(..., description="Path to the local folder")):
-    if not os.path.isdir(path):
-        raise HTTPException(status_code=400, detail="Invalid folder path")
+@router.post("/list-preview/", response_model=str)
+def list_pdf_preview(files: list[UploadFile] = File(...)):
+    """
+    Accept multiple local file paths and process them.
+    Logic handled inside app/services/process_files.py
+    """
     try:
-        return process_folder(path, client)
+        return handle_multiple_files(files)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
