@@ -87,6 +87,9 @@ def get_llm_output(
                 person_key = key.replace(" ", "_")
                 output_dict[person_key] = value
 
+        if len(output_dict) != total_people:
+            return "Question are not generated properly"
+
         print(len(output_dict))
         print(type(output_dict))
         print(output_dict)
