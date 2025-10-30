@@ -35,6 +35,7 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
         max_marks=test.max_marks,
         total_questions=total_questions,  # calculated here
         passing_marks=test.passing_marks,
+        no_of_people=test.no_of_people,
         created_at=test.created_at,
     )
 

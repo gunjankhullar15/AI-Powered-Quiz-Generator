@@ -18,7 +18,7 @@ async def get_questions(id: int,db: AsyncSession=Depends(get_db)):
         raise HTTPException(status_code=404,details="Questions not found.")
     return questions
 
-# # @router.post("/submit-answers/{q_id}")
+#  @router.post("/submit-answers/{q_id}")
 # async def submit_answers(
 #     q_id: int,
 #     db: AsyncSession = Depends(get_db)
