@@ -29,6 +29,6 @@ class Test(Base):
     
     # Relationships
     questions = relationship("Question", back_populates="test")
-    test_assignments = relationship("TestAssignment", back_populates="test")
+  
     employee_responses = relationship("EmployeeResponse", back_populates="test")
     results = relationship("Result", back_populates="test")

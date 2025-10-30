@@ -18,7 +18,7 @@ def generate_llm_output(topic: str,
     load_dotenv()  # Load environment variables from .env file
     logger.info("Initializing LLM model...")
     model = ChatGroq(
-        api_key=os.getenv("GROQ_API_KEY"),  # 👉 move this to .env
+        api_key=os.getenv("GROQ_API_KEY"),  #  move this to .env
         model_name="llama-3.3-70b-versatile"
     )
     logger.info("LLM model initialized successfully.")
