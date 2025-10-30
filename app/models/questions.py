@@ -13,3 +13,4 @@ class Question(Base):
     # Relationships
     test = relationship("Test", back_populates="questions")
     employee_responses = relationship("EmployeeResponse", back_populates="question")
+    test_assignments = relationship("TestAssignment", back_populates="question")

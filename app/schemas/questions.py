@@ -8,6 +8,9 @@ class QuestionBase(BaseModel):
 class QuestionCreate(QuestionBase):
     pass
 
-class QuestionResponse(QuestionBase):
-    q_id: int
+class QuestionResponse(BaseModel):
+    total_answers: int
+    test_id: int
+    emp_id: int
+    question_id: int
     model_config = ConfigDict(from_attributes=True)

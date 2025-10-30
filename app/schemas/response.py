@@ -11,6 +11,10 @@ class EmployeeResponseBase(BaseModel):
 
 class EmployeeResponseCreate(EmployeeResponseBase):
     pass
+class ResponseSchema(BaseModel):
+    t_id: int
+    emp_id: int
+    responses: str
 
 class EmployeeResponseResponse(EmployeeResponseBase):
     emp_id: int

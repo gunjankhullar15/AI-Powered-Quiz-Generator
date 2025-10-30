@@ -76,4 +76,3 @@ async def get_all_tests(db: AsyncSession = Depends(get_db)):
     ]
     
     return tests_list
-
