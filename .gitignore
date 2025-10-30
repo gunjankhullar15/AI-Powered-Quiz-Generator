@@ -110,5 +110,5 @@ alembic/versions/*.pyc
 alembic/versions/__pycache__/   
 alembic/env.pyc
 alembic/__pycache__/
-alembic.ini/
+alembic.ini
 alembic/
