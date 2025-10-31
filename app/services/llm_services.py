@@ -79,7 +79,7 @@ Level of difficulty: **Easy**
       "option 3": "To define the set of assumptions sufficient to deduce conclusions",
       "option 4": "To minimize training errors",
       "answer": "To reduce the complexity of the hypothesis space",
-      "Source": "content above"
+    
     }}
   ],
  
@@ -97,7 +97,7 @@ Level of difficulty: **Easy**
       "option 1": "True",
       "option 2": "False",
       "answer": "True",
-      "Source": "content above"
+      
     }}
   ],
  
@@ -106,7 +106,7 @@ Level of difficulty: **Easy**
     {{
       "question": "In machine learning, ________ is used to evaluate the performance of a model.",
       "answer": "cross-validation",
-      "Source": "LLM knowledge"
+
     }}
   ],
  

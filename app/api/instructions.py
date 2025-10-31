@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status   
 from sqlalchemy.ext.asyncio import AsyncSession
-
-router = APIRouter(prefix="/instructions")
+from app.schemas.employee import EmployeeCreate
 from fastapi import APIRouter, Depends, HTTPException, status   
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -10,9 +9,10 @@ from app.models import Employee, Test
 
 router = APIRouter(prefix="/instructions")
 
-@router.get("/{test_id}")
+@router.post("/{test_id}")
 async def get_instructions(
     test_id: int,
+    emp : EmployeeCreate,
     db: AsyncSession = Depends(get_db)
 ):
     """Get test instructions for a specific employee and test."""
@@ -55,18 +55,11 @@ Please read the instructions carefully before you begin.
  
 ✅ **Good luck with your test!**
 """
+    emp=Employee(
+        emp_code=emp.emp_code,
+        full_name=emp.full_name
+    )
+    db.add(emp)
+    await db.commit()
+
     return {"instructions": instruction_page}
-#   """  return {
-#         "instructions": instruction_page,
-#         "test_details": {
-#             "test_name": test.test_name,
-#             "total_time": test.duration,
-#             "passing_percentage": percentage,
-#             "total_questions": (
-#                 test.no_of_mcq+ 
-#                 test.no_of_true_false + 
-#                 test.no_of_fill_blanks + 
-#                 test.no_scenario_based
-#             )
-#         }
-#     }"""

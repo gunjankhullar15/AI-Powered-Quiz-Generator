@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from app.api import data_routers, llm_routers, test,weightage,employee,questions,submit_answer
+from app.api import data_routers, llm_routers, test,weightage,employee,questions,submit_answer,instructions
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils.db_seeder import seed_fixed_weightages
 
