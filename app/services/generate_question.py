@@ -1,5 +1,5 @@
 from app.services.llm_services import generate_llm_output
-from app.services.weaviate_services import search_in_weaviate
+from app.services.weaviate_services import search_in_weaviate, clear_weaviate_data, client
 from app.logs.logger_config import setup_logger
 from app.services.response_cleaner import clean_llm_response
 from fastapi import HTTPException
@@ -15,7 +15,7 @@ def generating_question_from_llm(topic : str,
     try:
         useall_content = False
 
-        if topic == None:
+        if topic == "":
             useall_content = True
         # Validation: Either topic or useall_content must be set
         if not topic and not useall_content:
@@ -79,6 +79,9 @@ def generating_question_from_llm(topic : str,
         if len(output_dict) != total_people:
             return "Question are not generated properly"
  
+
+        clear_status = clear_weaviate_data(client)
+        logger.info(f"Weaviate cleanup status: {clear_status}")
         return output_dict
  
    

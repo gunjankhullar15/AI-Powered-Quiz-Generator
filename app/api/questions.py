@@ -5,12 +5,17 @@ from sqlalchemy import select
 from app.models import Question, EmployeeResponse, Employee, Test
 from app.utils.database import get_db
 from app.schemas.questions import Questiondata
+import json
 
 router = APIRouter(prefix="/questions")
 
 @router.post("/start-test", description="Get questions for a specific test and employee")  
 async def get_questions(ques: Questiondata, db: AsyncSession = Depends(get_db)):
     
+
+    emp_result = await db.execute(select(Employee).where(Employee.emp_code == ques.emp_code))
+    employee = emp_result.scalar_one_or_none()
+
     result = await db.execute(select(Question).where(Question.q_id == ques.q_id))
     questions = result.scalar_one_or_none()
     
@@ -18,13 +23,19 @@ async def get_questions(ques: Questiondata, db: AsyncSession = Depends(get_db)):
     if not questions:
         raise HTTPException(status_code=404, detail="Questions not found.")
     
-    questions_data = [
-        {
+    try:
+        question_data = json.loads(questions.question_statement_options)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Invalid question JSON format in database.")
+
+
+    questions_data = {
+            "emp_id": employee.emp_id,
             "test_id": questions.t_id,
             "q_id": questions.q_id,
             "emp_code": ques.emp_code,
-            "question_text": questions.question_statement_options,
+            "question_text": question_data,
         }
-    ]
+    
     
     return questions_data

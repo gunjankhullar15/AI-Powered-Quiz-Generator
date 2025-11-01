@@ -24,7 +24,7 @@ def calculating_score(data : dict):
     return totals_marks
 
 
-def evaluating_user_answers(user_answer : str, mcq_marks : int, truefalse_marks : int, fillups_marks : int, scenario_based_marks : int):
+def evaluating_user_answers(user_answer : dict, mcq_marks : int, truefalse_marks : int, fillups_marks : int, scenario_based_marks : int):
     
     load_dotenv()
 

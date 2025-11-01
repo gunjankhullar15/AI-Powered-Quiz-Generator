@@ -58,10 +58,47 @@ def search_in_weaviate(query: str, max_chunks: int = 3):
     return matches
  
  
+# def clear_weaviate_data(client):
+#     # 🧹 Deleting all existing data
+#     try:
+
+#         if "Document" not in client.collections.list_all():
+#             return "⚠️ 'Document' collection does not exist."
+
+#         # Access the collection
+#         collection = client.collections.get("Document")
+
+#         # Count how many objects exist
+#         count_result = collection.aggregate.over_all()
+#         total_objects = count_result.total_objects
+
+#         if total_objects == 0:
+#             return "No data found in 'Document' collection. Nothing to delete."
+        
+#         client.collections.delete("Document")
+#         return "🧹 Cleared all objects from the 'Document' class."
+#     except Exception as e:
+#         return f"⚠️ Failed to delete old data: {e}"
+
 def clear_weaviate_data(client):
-    # 🧹 Deleting all existing data
     try:
+        collections = client.collections.list_all()
+        if "Document" not in collections:
+            return "'Document' collection does not exist."
+
+        collection = client.collections.get("Document")
+
+        try:
+            count_result = collection.aggregate.over_all()
+            total_objects = count_result.objects[0].total_count if count_result.objects else 0
+        except Exception:
+            total_objects = None
+
         client.collections.delete("Document")
-        return "🧹 Cleared all objects from the 'Document' class."
+
+        if total_objects:
+            return f"Cleared all {total_objects} objects from the 'Document' collection."
+        else:
+            return "Cleared all objects from the 'Document' collection."
     except Exception as e:
-        return f"⚠️ Failed to delete old data: {e}"
+        return f"Failed to delete old data: {e}"

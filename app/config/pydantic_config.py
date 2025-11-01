@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     DB_NAME : str
     DB_USER : str
     GROQ_API_KEY: str
-    DATABASE_URL: str
+    #DATABASE_URL: str
     BASE_URL: str
      
  

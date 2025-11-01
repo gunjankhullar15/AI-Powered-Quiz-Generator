@@ -60,7 +60,7 @@ Level of difficulty: **Easy**
 2. The **output must be valid JSON only** (no markdown, no explanations outside JSON).
 3. Follow the **exact JSON structure** shown below.
 4. All string values must be wrapped in **double quotes**.
-5. Include accurate **answers** and **explanations**.
+5. Include accurate **answers**.
 6. Skip any section if there’s insufficient data — do not leave blank or null fields.
  
 ---
@@ -118,7 +118,7 @@ Level of difficulty: **Easy**
  
 **1. MCQs**
 - Create {mcq_n_questions} MCQs per person.
-- Each MCQ should have 4 options, one correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
+- Each MCQ should have 4 options, one correct answer.
 - Each question should have question number.
  
 **2. Scenario-based Questions**
@@ -128,12 +128,12 @@ Level of difficulty: **Easy**
  
 **3. True/False Questions**
 - Create {truefalse_n_questions} per person.
-- Include two options ("True", "False"), a correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
+- Include two options ("True", "False"), a correct answer.
 - Each question should have question number.
  
 **4. Fill in the Blanks**
 - Create {fillups_n_questions} per person.
-- Include one blank, the correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
+- Include one blank, the correct answer.
 - Each question should have question number.
  
  

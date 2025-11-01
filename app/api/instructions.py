@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.schemas.employee import EmployeeCreate
 from app.utils.database import get_db
-from app.models import Employee, Test
+from app.models import Employee, Test, Question, TestAssignment
 
 router = APIRouter(prefix="/instructions")
 
@@ -71,9 +71,39 @@ Please read the instructions carefully before you begin.
         db.add(employee)
         await db.commit()
         await db.refresh(employee)
+
+    question_result = await db.execute(
+        select(Question)
+        .where(Question.t_id == test_id, Question.assigned == False)
+        .limit(1)
+    )
+    question = question_result.scalar_one_or_none()
+
+    if not question:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No available questions left to assign for this test."
+        )
+
+    # Create TestAssignment entry
+    test_assignment = TestAssignment(
+        q_id=question.q_id,
+        emp_id=employee.emp_id
+    )
+    db.add(test_assignment)
+
+    # Mark question as assigned
+    await db.execute(
+        update(Question)
+        .where(Question.q_id == question.q_id)
+        .values(assigned=True)
+    )
     
+    await db.commit()
+
     return {
         "instructions": instruction_page,
         "emp_code": employee.emp_code,
-        "test_id": test.t_id
+        "test_id": test.t_id,
+        "q_id": question.q_id
     }

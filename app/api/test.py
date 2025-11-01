@@ -85,8 +85,7 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
         await db.refresh(new_test)
         
         return {
-            "test": new_test,
-            "questions": llm_response
+            "test": new_test
         }
     
     except Exception as e:
