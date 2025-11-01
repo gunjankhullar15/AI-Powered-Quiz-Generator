@@ -8,7 +8,7 @@ from app.services.process_files import handle_multiple_files
 router = APIRouter()
  
 @router.post("/list-preview/", response_model=str)
-def list_pdf_preview(files: list[UploadFile] = File(...)):
+async def list_pdf_preview(files: list[UploadFile] = File(...)):
     """
     Accept multiple local file paths and process them.
     Logic handled inside app/services/process_files.py
@@ -29,7 +29,7 @@ def list_pdf_preview(files: list[UploadFile] = File(...)):
  
  
 @router.get("/article-preview/", response_model=str)
-def list_article_preview(url: str = Query(..., description="URL of the article to process")):
+async def list_article_preview(url: str = Query(..., description="URL of the article to process")):
     """
     Accept an article URL and process it: extract content, split into chunks, embed, store in Weaviate.
     """

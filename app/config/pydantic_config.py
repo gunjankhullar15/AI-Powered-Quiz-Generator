@@ -6,7 +6,9 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME : str
     DB_USER : str
-    hf_token: str
+    GROQ_API_KEY: str
+    DATABASE_URL: str
+    BASE_URL: str
      
  
     class Config:

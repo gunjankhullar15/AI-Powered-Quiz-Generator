@@ -28,7 +28,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(data_routers.router, tags=["Data Processing"])
-app.include_router(llm_routers.router, tags=["LLM"])
+# app.include_router(llm_routers.router, tags=["LLM"])
 app.include_router(test.router, tags=["Tests"])
 app.include_router(submit_answer.router, tags=["Submit Answers"])
 app.include_router(weightage.router, tags=["Weightages"])

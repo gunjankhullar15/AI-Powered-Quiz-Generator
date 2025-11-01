@@ -5,6 +5,7 @@ from app.models import Test, Question
 from app.utils.database import get_db
 from app.services.generate_question import generating_question_from_llm
 import json
+from app.utils.test_link_generator import generate_test_link
 
 router = APIRouter(prefix="/tests")  
 
@@ -45,6 +46,11 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
         db.add(new_test)
         await db.flush()
         await db.refresh(new_test)
+
+        test_link = generate_test_link(new_test.t_id)
+        new_test.test_url = test_link
+        await db.commit()
+        await db.flush()
 
                # Generate questions using LLM
         llm_response = generating_question_from_llm(
