@@ -29,7 +29,7 @@ def evaluating_user_answers(user_answer : str, mcq_marks : int, truefalse_marks 
     load_dotenv()
 
     model = ChatGroq(
-        api_key=os.getenv("GROQ_API_KEY"),  # 👉 move this to .env
+        api_key=os.getenv("GROQ_API_KEY"),  #  move this to .env
         model_name="llama-3.3-70b-versatile"
     )
     

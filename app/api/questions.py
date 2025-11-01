@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.models import Question, EmployeeResponse, Employee, Test
+from app.models import Question, Test
 from app.utils.database import get_db
 from app.schemas.questions import Questiondata
 
@@ -18,12 +18,19 @@ async def get_questions(ques: Questiondata, db: AsyncSession = Depends(get_db)):
     if not questions:
         raise HTTPException(status_code=404, detail="Questions not found.")
     
+    test_result = await db.execute(select(Test).where(Test.t_id == questions.t_id))
+    test = test_result.scalar_one_or_none()
+    
+    if not test:
+        raise HTTPException(status_code=404, detail="Test not found.")
+    
     questions_data = [
         {
             "test_id": questions.t_id,
             "q_id": questions.q_id,
             "emp_code": ques.emp_code,
             "question_text": questions.question_statement_options,
+            "duration": test.duration
         }
     ]
     

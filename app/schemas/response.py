@@ -14,7 +14,7 @@ class EmployeeResponseCreate(EmployeeResponseBase):
 class ResponseSchema(BaseModel):
     t_id: int
     emp_id: int
-    responses: Dict[str,Any]
+    responses: str
 
 class EmployeeResponseResponse(EmployeeResponseBase):
     emp_id: int

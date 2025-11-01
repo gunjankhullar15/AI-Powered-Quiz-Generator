@@ -17,4 +17,5 @@ class QuestionResponse(BaseModel):
     test_id: int
     emp_id: int
     question_id: int
+    
     model_config = ConfigDict(from_attributes=True)

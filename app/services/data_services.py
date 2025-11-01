@@ -23,7 +23,7 @@ def process_folder(path: str, client):
         file_path = os.path.join(path, file)
         ext = os.path.splitext(file)[1].lower()
  
-        print(f"📄 Processing file: {file}")
+        print(f" Processing file: {file}")
  
         # Get document chunks using appropriate loader and splitter
         chunks = get_splitter(file_path)
@@ -42,4 +42,4 @@ def process_folder(path: str, client):
                 vector=vector
             )
  
-    return f"✅ Successfully processed {len(supported_files)} files (PDF, DOCX, TXT, PPTX)."
+    return f" Successfully processed {len(supported_files)} files (PDF, DOCX, TXT, PPTX)."

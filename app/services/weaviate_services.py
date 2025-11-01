@@ -5,10 +5,10 @@ from sentence_transformers import SentenceTransformer
 # Load model once
 transformer = SentenceTransformer('all-MiniLM-L6-v2')
  
-# ✅ Connect once
+#  Connect once
 client = weaviate.connect_to_local()
  
-# ✅ Create collection if not exists
+#  Create collection if not exists
 if not client.collections.exists("Document"):
     client.collections.create(
         name="Document",
@@ -53,15 +53,15 @@ def search_in_weaviate(query: str, max_chunks: int = 3):
         certainty=0.3
     )
  
-    # 🧩 Return in a clean consistent format
+    #  Return in a clean consistent format
     matches = [{"content": obj.properties.get("content", "")} for obj in results.objects]
     return matches
  
  
 def clear_weaviate_data(client):
-    # 🧹 Deleting all existing data
+    #  Deleting all existing data
     try:
         client.collections.delete("Document")
-        return "🧹 Cleared all objects from the 'Document' class."
+        return " Cleared all objects from the 'Document' class."
     except Exception as e:
-        return f"⚠️ Failed to delete old data: {e}"
+        return f" Failed to delete old data: {e}"
