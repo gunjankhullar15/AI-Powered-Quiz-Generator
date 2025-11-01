@@ -2,7 +2,7 @@ from langchain_groq import ChatGroq
 import os
 from dotenv import load_dotenv
 from app.logs.logger_config import setup_logger
- 
+
 logger = setup_logger(__name__)
  
 def generate_llm_output(topic: str,
@@ -18,7 +18,7 @@ def generate_llm_output(topic: str,
     load_dotenv()  # Load environment variables from .env file
     logger.info("Initializing LLM model...")
     model = ChatGroq(
-        api_key=os.getenv("GROQ_API_KEY"),  #  move this to .env
+        api_key=os.getenv("GROQ_API_KEY"),  # 👉 move this to .env
         model_name="llama-3.3-70b-versatile"
     )
     logger.info("LLM model initialized successfully.")
@@ -31,7 +31,7 @@ def generate_llm_output(topic: str,
     fillups_n_questions = fillups_questions
     #match_n_questions = match_questions    
    
-   
+    
    
     unified_prompt = f"""
 You are an expert question generator specializing in multiple formats of assessment questions.  
@@ -41,7 +41,7 @@ Your task is to create the following types of questions for **{n_people} differe
 - **{sch_n_questions} scenario-based questions**
 - **{truefalse_n_questions} true/false questions**
 - **{fillups_n_questions} fill-in-the-blanks questions**
- 
+
  
 ---
  
@@ -136,7 +136,7 @@ Level of difficulty: **Easy**
 - Include one blank, the correct answer, and source which tell how this question is made weather it is made from the given content or these question is generated from the llm knowledge.
 - Each question should have question number.
  
- 
+
  
 ---
  
@@ -150,3 +150,6 @@ Do **not** include anything outside the JSON.
     response1 = model.invoke(unified_prompt)
     logger.info("LLM response received.")
     return {"response": response1.content}
+    
+ 
+ 

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, Text, DECIMAL, ForeignKey
 from sqlalchemy.orm import relationship
-from app.utils.database import Base
-
+#from app.utils.database import Base
+from app.models.base import Base
 class EmployeeResponse(Base):
     __tablename__ = "employee_responses"
     

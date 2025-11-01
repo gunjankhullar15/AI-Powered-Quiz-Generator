@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DECIMAL, CheckConstraint
-from app.utils.database import Base
-
+#from app.utils.database import Base
+from app.models.base import Base
 class Weightage(Base):
     __tablename__ = "weightages"
     

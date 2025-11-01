@@ -2,9 +2,9 @@ import os
 from app.utils.splitter import get_splitter
 from app.services.weaviate_services import transformer
 from app.logs.logger_config import setup_logger
- 
+
 logger = setup_logger(__name__)
- 
+
  
  
 def process_folder(path: str, client):

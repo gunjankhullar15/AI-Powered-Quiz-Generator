@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, DateTime, Enum, ForeignKey
 from sqlalchemy.orm import relationship
-from app.utils.database import Base
-
+#from app.utils.database import Base
+from app.models.base import Base
 class TestAssignment(Base):
     __tablename__ = "test_assignments"
     

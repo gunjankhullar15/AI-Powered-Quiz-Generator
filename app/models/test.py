@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP, DECIMAL, CheckConstraint, ForeignKey
 from sqlalchemy.orm import relationship
-from app.utils.database import Base
+#from app.utils.database import Base
+from app.models.base import Base
 class Test(Base):
     __tablename__ = "tests"
     

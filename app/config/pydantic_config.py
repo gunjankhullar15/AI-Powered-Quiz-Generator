@@ -6,8 +6,8 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME : str
     DB_USER : str
-    hf_token: str
-     
+    GROQ_API_KEY : str
+    BASE_URL : str
  
     class Config:
         env_file = '.env'

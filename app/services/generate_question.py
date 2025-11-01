@@ -1,33 +1,23 @@
-import json
-import re
-from fastapi import APIRouter, Query, HTTPException
-from typing import Optional
+
 from app.services.llm_services import generate_llm_output
 from app.services.weaviate_services import search_in_weaviate
 from app.logs.logger_config import setup_logger
 from app.services.response_cleaner import clean_llm_response
-from app.schemas.test import TestCreate
+from fastapi import HTTPException
  
 logger = setup_logger(__name__)
-router = APIRouter()
  
-@router.get("/output/")
-async def get_llm_output(
-    topic: Optional[str] = Query(None, description="Enter the topic for which to generate test questions (ignored if useall_content=True)"),
-    useall_content: Optional[bool] = Query(False, description="If True, use all content from Weaviate and ignore topic"),
-    mcq_questions: int = Query(5, description="Number of MCQ questions"),
-    sch_questions: int = Query(3, description="Number of Scenario-based questions"),
-    truefalse_questions: int = Query(5, description="Number of True/False questions"),
-    fillups_questions: int = Query(3, description="Number of Fill in the blanks questions"),
-    total_people: int = Query(2, description="Total number of people")
-    #match_questions: int = Query(3, description="Number of Match the following questions"
-):
-    """
-    Fetch all Weaviate chunks related to the given topic or all content if useall_content=True.
-    Each chunk represents ~300 words of relevant text. All chunks are combined
-    into a single context for the LLM.
-    """
+def generating_question_from_llm(topic : str | None,
+                                 mcq_questions : int,
+                                 sch_questions : int,
+                                 truefalse_questions : int,
+                                 fillups_questions : int,
+                                 total_people : int):
     try:
+        useall_content = False
+ 
+        if topic == "":
+            useall_content = True
         # Validation: Either topic or useall_content must be set
         if not topic and not useall_content:
             raise HTTPException(
@@ -78,7 +68,7 @@ async def get_llm_output(
             total_people,
             #match_questions
         )
-
+ 
         clean_data = clean_llm_response(raw_output)
         output_dict = {}
         for key, value in clean_data["response"].items():
@@ -86,19 +76,13 @@ async def get_llm_output(
                 # rename key with underscore instead of space
                 person_key = key.replace(" ", "_")
                 output_dict[person_key] = value
-
+ 
         if len(output_dict) != total_people:
             return "Question are not generated properly"
-
-        print(len(output_dict))
-        print(type(output_dict))
-        print(output_dict)
-
-        for key in output_dict:
-          print(key)
  
-        return clean_data
+        return output_dict
  
    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+ 
