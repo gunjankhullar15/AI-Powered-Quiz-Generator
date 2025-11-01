@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Dict, Any
 
 class EmployeeResponseBase(BaseModel):
     t_id: int
@@ -14,7 +14,7 @@ class EmployeeResponseCreate(EmployeeResponseBase):
 class ResponseSchema(BaseModel):
     t_id: int
     emp_id: int
-    responses: str
+    responses: Dict[str,Any]
 
 class EmployeeResponseResponse(EmployeeResponseBase):
     emp_id: int

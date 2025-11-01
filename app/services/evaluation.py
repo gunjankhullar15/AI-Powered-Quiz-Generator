@@ -93,4 +93,6 @@ important note:
 
     user_marks = calculating_score(dict_response)
 
-    return user_marks
+    marks= user_marks['Total Marks']
+
+    return marks

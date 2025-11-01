@@ -7,6 +7,10 @@ class QuestionBase(BaseModel):
 
 class QuestionCreate(QuestionBase):
     pass
+class Questiondata(BaseModel):
+    test_id: int
+    q_id: int
+    emp_code: str
 
 class QuestionResponse(BaseModel):
     total_answers: int
