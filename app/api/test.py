@@ -49,8 +49,7 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
 
         test_link = generate_test_link(new_test.t_id)
         new_test.test_url = test_link
-        await db.commit()
-        await db.flush()
+        await db.commit() 
 
                # Generate questions using LLM
         llm_response = generating_question_from_llm(
@@ -61,6 +60,10 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
             fillups_questions=test.no_of_fill_blanks,
             total_people=test.no_of_people
         )
+
+        if not isinstance(llm_response, dict):
+            raise HTTPException(status_code=500, detail="Invalid LLM response format.")
+
 
         # Store questions in database
         question_rows = []
@@ -78,6 +81,7 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
         
         if question_rows:
             db.add_all(question_rows)
+            await db.commit()
         else:
             raise HTTPException(status_code=500, detail="No questions generated")
 

@@ -70,11 +70,27 @@ def generating_question_from_llm(topic : str,
 
         clean_data = clean_llm_response(raw_output)
         output_dict = {}
-        for key, value in clean_data["response"].items():
-            if key.startswith("person"):
-                # rename key with underscore instead of space
-                person_key = key.replace(" ", "_")
-                output_dict[person_key] = value
+
+
+        # for key, value in clean_data["response"].items():
+        #     if key.startswith("person"):
+        #         # rename key with underscore instead of space
+        #         person_key = key.replace(" ", "_")
+        #         output_dict[person_key] = value
+
+        response_data = clean_data.get("response", {})
+
+        if "people" in response_data and isinstance(response_data["people"], list):
+            for idx, person_data in enumerate(response_data["people"], start=1):
+                person_key = f"person_{idx}"
+                output_dict[person_key] = person_data
+        else:
+            for key, value in response_data.items():
+                if key.startswith("person"):
+                    person_key = key.replace(" ", "_")
+                    output_dict[person_key] = value
+
+
 
         if len(output_dict) != total_people:
             return "Question are not generated properly"

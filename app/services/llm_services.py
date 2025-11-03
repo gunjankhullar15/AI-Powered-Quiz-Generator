@@ -1,5 +1,7 @@
-from langchain_groq import ChatGroq
+#from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 import os
+import json
 from dotenv import load_dotenv
 from app.logs.logger_config import setup_logger
  
@@ -17,11 +19,11 @@ def generate_llm_output(topic: str,
  
     load_dotenv()  # Load environment variables from .env file
     logger.info("Initializing LLM model...")
-    model = ChatGroq(
-        api_key=os.getenv("GROQ_API_KEY"),  #  move this to .env
-        model_name="llama-3.3-70b-versatile"
+    model = ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),  #  move this to .env
+        model="gpt-4o-mini"
     )
-    logger.info("LLM model initialized successfully.")
+    logger.info("OpenAI model initialized successfully.")
  
     mcq_n_questions = mcq_questions
     n_people = total_people
@@ -70,7 +72,7 @@ Level of difficulty: **Easy**
 {{
   "people": 1,
  
-  "question type": "mcq",
+  
   "all mcq questions": [
     {{
       "question": "What is the primary function of inductive bias in a learning algorithm?",
@@ -83,14 +85,14 @@ Level of difficulty: **Easy**
     }}
   ],
  
-  "question type": "scenario",
+ 
   "all scenario questions": [
     {{
       "question": "Imagine a company wants to use AI to predict employee turnover. What data should they collect and why?"
     }}
   ],
  
-  "question type": "true/false",
+ 
   "all true/false questions": [
     {{
       "question": "Supervised learning requires labeled data.",
@@ -101,7 +103,7 @@ Level of difficulty: **Easy**
     }}
   ],
  
-  "question type": "fill in the blanks",
+ 
   "all fill in the blanks questions": [
     {{
       "question": "In machine learning, ________ is used to evaluate the performance of a model.",
@@ -149,4 +151,5 @@ Do **not** include anything outside the JSON.
     logger.info("Sending prompt to LLM...")
     response1 = model.invoke(unified_prompt)
     logger.info("LLM response received.")
+    print("response1:", response1.content)
     return {"response": response1.content}
