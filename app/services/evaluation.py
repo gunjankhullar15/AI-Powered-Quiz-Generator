@@ -1,6 +1,7 @@
 import json
 import re
-from langchain_groq import ChatGroq
+#from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import os
 
@@ -28,9 +29,9 @@ def evaluating_user_answers(user_answer : dict, mcq_marks : int, truefalse_marks
     
     load_dotenv()
 
-    model = ChatGroq(
-        api_key=os.getenv("GROQ_API_KEY"),  # 👉 move this to .env
-        model_name="llama-3.3-70b-versatile"
+    model = ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),  # 👉 move this to .env
+        model="gpt-4o-mini"
     )
     
     prompt = f"""

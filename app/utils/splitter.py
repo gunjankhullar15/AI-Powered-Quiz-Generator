@@ -4,8 +4,9 @@ from langchain_community.document_loaders import (
     TextLoader,
     UnstructuredPowerPointLoader,
 )
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.schema import Document
+from langchain_text_splitters import CharacterTextSplitter
+#from langchain.schema import Document
+from langchain_core.documents import Document
 from app.logs.logger_config import setup_logger
 logger = setup_logger(__name__)
  

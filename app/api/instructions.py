@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, update, and_
 from app.schemas.employee import EmployeeCreate
 from app.utils.database import get_db
 from app.models import Employee, Test, Question, TestAssignment
@@ -71,6 +71,28 @@ Please read the instructions carefully before you begin.
         db.add(employee)
         await db.commit()
         await db.refresh(employee)
+
+     # Check if test is already assigned to this employee
+    existing_assignment_result = await db.execute(
+        select(TestAssignment)
+        .join(Question)
+        .where(
+            and_(
+                TestAssignment.emp_id == employee.emp_id,
+                Question.t_id == test_id
+            )
+        )
+    )
+    existing_assignment = existing_assignment_result.scalar_one_or_none()
+
+    if existing_assignment:
+        # If already assigned, return the same assignment (no new assignment)
+        return {
+            "instructions": instruction_page,
+            "emp_code": employee.emp_code,
+            "test_id": test.t_id,
+            "q_id": existing_assignment.q_id
+        }
 
     question_result = await db.execute(
         select(Question)
