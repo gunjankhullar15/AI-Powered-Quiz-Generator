@@ -67,6 +67,8 @@ async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_d
             # Update existing result
             existing.score = total_marks_obtained  # Fixed: removed trailing comma
             existing.date = today_date
+            existing.attempted = existing.attempted + 1
+            db.add(existing)
             await db.commit()
             await db.refresh(existing)
         else:
@@ -75,7 +77,8 @@ async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_d
                 date=today_date,
                 score=total_marks_obtained,  # Fixed: use extracted value
                 emp_id=employee.emp_id,
-                t_id=result.t_id
+                t_id=result.t_id,
+                attempted=1
             )
             db.add(new_result)
             await db.commit()

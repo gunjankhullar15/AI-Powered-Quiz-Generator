@@ -8,6 +8,7 @@ class ResultBase(BaseModel):
     score: int
     emp_id: int
     t_id: int 
+    attempted: int
     passing_marks: int 
 
 class ResultCreate(ResultBase):

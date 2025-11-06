@@ -47,6 +47,7 @@ async def get_candidates(test_id: int, db: AsyncSession = Depends(get_db)):
             "test_id": candidate.t_id,
             "score": candidate.score,
             "percentage": f"{round((candidate.score / test.max_marks) * 100, 2)}%",
+            "attempted": candidate.attempted,
             "status": "Pass" if candidate.score >= test.passing_marks else "Fail",
             "date": candidate.date.strftime("%Y-%m-%d %H:%M:%S") if candidate.date else None
         }
