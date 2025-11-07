@@ -15,11 +15,6 @@ async def list_pdf_preview(files: Optional[list[UploadFile]] = File(None), urls:
     """
     try:
 
-        print(len(files))
-        print(files)
-        print(len(urls))
-        print(urls)
-
         file_result = ""
         url_result = ""
 
