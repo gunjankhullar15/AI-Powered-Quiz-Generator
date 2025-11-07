@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Query, HTTPException, File, UploadFile
-import os
+from fastapi import APIRouter, Query, HTTPException, File, UploadFile, Form
+from typing import List, Optional
 from app.services.data_services import process_folder
 from app.services.weaviate_services import client, clear_weaviate_data
 from app.services.article_services import process_article
@@ -8,13 +8,48 @@ from app.services.process_files import handle_multiple_files
 router = APIRouter()
  
 @router.post("/list-preview/", response_model=str)
-async def list_pdf_preview(files: list[UploadFile] = File(...)):
+async def list_pdf_preview(files: Optional[list[UploadFile]] = File(None), urls: Optional[List[str]] = Form(None)):
     """
     Accept multiple local file paths and process them.
     Logic handled inside app/services/process_files.py
     """
     try:
-        return handle_multiple_files(files)
+
+        print(len(files))
+        print(files)
+        print(len(urls))
+        print(urls)
+
+        file_result = ""
+        url_result = ""
+
+        try:
+            file_result = handle_multiple_files(files)
+        except Exception:
+            file_result = "No files uploaded."
+
+        try:
+            for url in urls:
+                if not url.startswith("http"):
+                    raise HTTPException(status_code=400, detail="Invalid URL provided.")
+
+                clean_urls = []
+                for url in urls:
+                    clean_urls.extend([u.strip() for u in url.split(",") if u.strip()])
+
+                for url in clean_urls:
+                    if not url.startswith("http"):
+                        raise HTTPException(status_code=400, detail=f"Invalid URL provided: {url}")
+                    try:
+                        res = process_article(url)
+                        url_result += f"\n{res}"
+                    except Exception as e:
+                        url_result += f"\nError processing {url}: {str(e)}"
+
+        except Exception:
+            url_result = "No URLs provided."
+
+        return f"url result is {url_result} and file result is {file_result}"
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
  
