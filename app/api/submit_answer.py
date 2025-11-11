@@ -41,8 +41,18 @@ async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_d
         
         # Convert responses dict to string for the LLM
         responses = result.responses
-    
-       
+        
+        # # If responses is already a dict, convert it to a JSON string
+        # if isinstance(responses, dict):
+        #     responses_str = json.dumps(responses)
+        # elif isinstance(responses, str):
+        #     if not responses.strip():
+        #         raise HTTPException(status_code=400, detail="Responses cannot be empty")
+        #     responses_str = responses
+        # else:
+        #     raise HTTPException(status_code=400, detail="Invalid responses format")
+        
+        # Pass the string to evaluating_user_answers
         user_marks = evaluating_user_answers(
             responses,  # Pass as string
             mcq_marks=1,

@@ -29,7 +29,7 @@ if not client.collections.exists("Document"):
 #     return {"query": query, "results": matches}
  
 #fetch all the data from weaviate
-def search_in_weaviate(query: str, max_chunks: int = 3):
+def search_in_weaviate(query: str, max_chunks: int = 15):
     """
     Perform semantic search in Weaviate using the topic as query.
     Fetches up to `max_chunks` (~300 words each) of related content.
