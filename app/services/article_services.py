@@ -47,7 +47,7 @@ def process_article(url: str):
  
         for text, vector in zip(texts, embeddings):
             doc_collection.data.insert(
-                properties={"content": text, "source_url": url},
+                properties={"content": text, "source_url": url, "filename": None},
                 vector=vector
             )
  

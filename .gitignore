@@ -112,3 +112,6 @@ alembic/env.pyc
 alembic/__pycache__/
 alembic.ini
 alembic/
+
+app/services/llm_services_async.py
+app/services/async_llm_chunk_processor.py

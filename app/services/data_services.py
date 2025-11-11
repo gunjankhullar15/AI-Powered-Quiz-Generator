@@ -38,7 +38,7 @@ def process_folder(path: str, client):
         # Store in Weaviate
         for chunk, vector in zip(text_chunks, embeddings):
             doc_collection.data.insert(
-                properties={"content": chunk, "filename": file},
+                properties={"content": chunk, "filename": file, "source_url": None},
                 vector=vector
             )
  
