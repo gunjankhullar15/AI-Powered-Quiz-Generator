@@ -7,8 +7,8 @@ class ResultBase(BaseModel):
     date: datetime
     score: int
     emp_id: int
-    t_id: int 
-    attempted: int
+    t_id: int
+    attempted: int 
     passing_marks: int 
 
 class ResultCreate(ResultBase):

@@ -93,7 +93,7 @@ async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_d
             "percentage": f"{round(percentage, 2)}%",
             "total_marks": test.max_marks,
             "status": "Pass" if total_marks_obtained >= test.passing_marks else "Fail",
-            "detailed_marks": user_marks
+            #"detailed_marks": user_marks
         }
 
         return result_data

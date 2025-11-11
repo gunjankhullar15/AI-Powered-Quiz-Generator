@@ -8,7 +8,8 @@ from app.logs.logger_config import setup_logger
 logger = setup_logger(__name__)
  
 def generate_llm_output(topic: str,
-                        results: str,
+                        article_content: str,
+                        pdf_content: str,
                         mcq_questions: int,
                         sch_questions: int,
                         truefalse_questions: int,
@@ -21,7 +22,9 @@ def generate_llm_output(topic: str,
     logger.info("Initializing LLM model...")
     model = ChatOpenAI(
         api_key=os.getenv("OPENAI_API_KEY"),  #  move this to .env
-        model="gpt-4o-mini"
+        model="gpt-4o-mini",
+        temperature=0,
+        model_kwargs={"response_format": {"type": "json_object"}}
     )
     logger.info("OpenAI model initialized successfully.")
  
@@ -50,9 +53,21 @@ Your task is to create the following types of questions for **{n_people} differe
 ### Context:
 Topic: {topic}
  
-Content:
-{results}
- 
+**ARTICLE CONTENT:**
+{article_content}
+
+**PDF/DOCUMENT CONTENT:**
+{pdf_content}
+
+
+**CRITICAL REQUIREMENT**: 
+- For EACH person, you MUST generate EXACTLY 50% of questions from ARTICLE CONTENT and 50% from PDF CONTENT.
+- If there are {mcq_n_questions} MCQs, generate {mcq_n_questions // 2} from article and {mcq_n_questions // 2} from PDF.
+- If there are {sch_n_questions} scenarios, generate {sch_n_questions // 2} from article and {sch_n_questions // 2} from PDF.
+- If there are {truefalse_n_questions} true/false, generate {truefalse_n_questions // 2} from article and {truefalse_n_questions // 2} from PDF.
+- If there are {fillups_n_questions} fill-ups, generate {fillups_n_questions // 2} from article and {fillups_n_questions // 2} from PDF.
+- This 50-50 split is MANDATORY for each person.
+
 Level of difficulty: **Easy**
  
 ---
@@ -64,55 +79,58 @@ Level of difficulty: **Easy**
 4. All string values must be wrapped in **double quotes**.
 5. Include accurate **answers**.
 6. Skip any section if there’s insufficient data — do not leave blank or null fields.
- 
+7. Ensure that questions are content-based only — do not generate questions related to author names, page numbers, indices, or other metadata.
+8. Each person MUST have equal questions from article and PDF content.
 ---
  
 ### Output JSON Format Example:
  
-{{
-  "people": 1,
- 
+  {{
+    "people": 1,
   
-  "all mcq questions": [
-    {{
-      "question": "What is the primary function of inductive bias in a learning algorithm?",
-      "option 1": "To reduce the complexity of the hypothesis space",
-      "option 2": "To increase the accuracy of the learner's predictions",
-      "option 3": "To define the set of assumptions sufficient to deduce conclusions",
-      "option 4": "To minimize training errors",
-      "answer": "To reduce the complexity of the hypothesis space",
-    
-    }}
-  ],
- 
- 
-  "all scenario questions": [
-    {{
-      "question": "Imagine a company wants to use AI to predict employee turnover. What data should they collect and why?"
-    }}
-  ],
- 
- 
-  "all true/false questions": [
-    {{
-      "question": "Supervised learning requires labeled data.",
-      "option 1": "True",
-      "option 2": "False",
-      "answer": "True",
+    "person 1": {{
+    "mcq": [
+      {{
+        "question": "What is the primary function of inductive bias in a learning algorithm?",
+        "option 1": "To reduce the complexity of the hypothesis space",
+        "option 2": "To increase the accuracy of the learner's predictions",
+        "option 3": "To define the set of assumptions sufficient to deduce conclusions",
+        "option 4": "To minimize training errors",
+        "answer": "To reduce the complexity of the hypothesis space",
       
-    }}
-  ],
- 
- 
-  "all fill in the blanks questions": [
-    {{
-      "question": "In machine learning, ________ is used to evaluate the performance of a model.",
-      "answer": "cross-validation",
+      }}
+    ],
+  
+  
+    "scenario": [
+      {{
+        "question": "Imagine a company wants to use AI to predict employee turnover. What data should they collect and why?"
+      }}
+    ],
+  
+  
+    "true/false": [
+      {{
+        "question": "Supervised learning requires labeled data.",
+        "option 1": "True",
+        "option 2": "False",
+        "answer": "True",
+        
+      }}
+    ],
+  
+  
+    "fill in the blanks": [
+      {{
+        "question": "In machine learning, ________ is used to evaluate the performance of a model.",
+        "answer": "cross-validation",
 
-    }}
-  ],
- 
+      }}
+    ],
+  
+  }}
 }}
+
  
 ---
  
@@ -121,22 +139,33 @@ Level of difficulty: **Easy**
 **1. MCQs**
 - Create {mcq_n_questions} MCQs per person.
 - Each MCQ should have 4 options, one correct answer.
-- Each question should have question number.
+- Generate {mcq_n_questions // 2} questions from ARTICLE CONTENT.
+- Generate {mcq_n_questions // 2} questions from PDF CONTENT.
+
+
  
 **2. Scenario-based Questions**
 - Create {sch_n_questions} scenario-based questions per person.
 - Each should present a real-world problem and ask for an applicable concept or solution.
-- Each question should have question number.
+- Generate {sch_n_questions // 2} questions from ARTICLE CONTENT.
+- Generate {sch_n_questions // 2} questions from PDF CONTENT.
+
+
  
 **3. True/False Questions**
 - Create {truefalse_n_questions} per person.
 - Include two options ("True", "False"), a correct answer.
-- Each question should have question number.
+- Generate {truefalse_n_questions // 2} questions from ARTICLE CONTENT.
+- Generate {truefalse_n_questions // 2} questions from PDF CONTENT.
+
+
  
 **4. Fill in the Blanks**
 - Create {fillups_n_questions} per person.
 - Include one blank, the correct answer.
-- Each question should have question number.
+- Generate {fillups_n_questions // 2} questions from ARTICLE CONTENT.
+- Generate {fillups_n_questions // 2} questions from PDF CONTENT.
+- The questions must be generated only from the important content provided above — do not create questions from random or irrelevant lines.
  
  
  
@@ -145,6 +174,8 @@ Level of difficulty: **Easy**
 ### Final Instruction:
 Return only the **final structured JSON** for all people — each containing all five question types.  
 Do **not** include anything outside the JSON.
+REMEMBER: You MUST maintain a 50-50 split between article and PDF content for EACH person's questions.
+If you cannot maintain this split, adjust the question distribution accordingly.
 """
  
    
