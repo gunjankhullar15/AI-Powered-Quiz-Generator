@@ -127,5 +127,7 @@ Please read the instructions carefully before you begin.
         "instructions": instruction_page,
         "emp_code": employee.emp_code,
         "test_id": test.t_id,
-        "q_id": question.q_id
+        "q_id": question.q_id,
+        "title": test.test_name,
+        "duration": test.duration,
     }

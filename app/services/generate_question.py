@@ -49,17 +49,38 @@ def generating_question_from_llm(topic : str,
             raise HTTPException(status_code=500, detail=f"Error during Weaviate search: {str(e)}")
  
  
-        if isinstance(search_results, list):
-            combined_text = "\n".join(
-                [res.get("content") or res.get("text") or "" for res in search_results if isinstance(res, dict)]
-            )
-        else:
-            combined_text = str(search_results)
+        # if isinstance(search_results, list):
+        #     combined_text = "\n".join(
+        #         [res.get("content") or res.get("text") or "" for res in search_results if isinstance(res, dict)]
+        #     )
+        # else:
+        #     combined_text = str(search_results)
+
+         # Separate article and PDF content
+        article_chunks = []
+        pdf_chunks = []
+        
+        for res in search_results:
+            if isinstance(res, dict):
+                content = res.get("content", "")
+                source = res.get("source", "")
+                
+                # Check if it's from article (has URL) or PDF (has filename)
+                if "http" in str(source) or res.get("source_url"):
+                    article_chunks.append(content)
+                else:
+                    pdf_chunks.append(content)
+        
+        article_text = "\n\n".join(article_chunks) if article_chunks else "No article content available."
+        pdf_text = "\n\n".join(pdf_chunks) if pdf_chunks else "No PDF content available."
+        
+        logger.info(f"Article chunks: {len(article_chunks)}, PDF chunks: {len(pdf_chunks)}")
  
         #  Step 4: Generate questions
         raw_output = generate_llm_output(
             topic if topic else "All Content",
-            combined_text,
+            article_text,
+            pdf_text,
             mcq_questions,
             sch_questions,
             truefalse_questions,

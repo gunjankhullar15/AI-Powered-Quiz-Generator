@@ -29,35 +29,77 @@ if not client.collections.exists("Document"):
 #     return {"query": query, "results": matches}
  
 #fetch all the data from weaviate
-def search_in_weaviate(query: str, max_chunks: int = 3):
-    """
-    Perform semantic search in Weaviate using the topic as query.
-    Fetches up to `max_chunks` (~300 words each) of related content.
-    """
-    doc_collection = client.collections.get("Document")
+# def search_in_weaviate(query: str, max_chunks: int = 10):
+#     """
+#     Perform semantic search in Weaviate using the topic as query.
+#     Fetches up to `max_chunks` (~300 words each) of related content.
+#     """
+#     doc_collection = client.collections.get("Document")
  
  
-    # Skip empty query (fetch all)
-    if not query:
-        results = doc_collection.query.fetch_objects(limit=max_chunks, return_properties=["content"])
-        return [{"content": obj.properties.get("content", "")} for obj in results.objects]
+#     # Skip empty query (fetch all)
+#     if not query:
+#         results = doc_collection.query.fetch_objects(limit=max_chunks, return_properties=["content"])
+#         return [{"content": obj.properties.get("content", "")} for obj in results.objects]
    
  
-    query_vector = transformer.encode(query).tolist()
+#     query_vector = transformer.encode(query).tolist()
  
-    # Perform similarity search
+#     # Perform similarity search
+#     results = doc_collection.query.near_vector(
+#         near_vector=query_vector,
+#         limit=max_chunks,
+#         return_properties=["content"],
+#         certainty=0.3
+#     )
+ 
+#     # 🧩 Return in a clean consistent format
+#     matches = [{"content": obj.properties.get("content", "")} for obj in results.objects]
+#     return matches
+ 
+
+def search_in_weaviate(query: str, max_chunks: int = 10):
+    """
+    Perform semantic search in Weaviate.
+    Ensures balanced results from both articles and PDFs.
+    """
+    doc_collection = client.collections.get("Document")
+    query_vector = transformer.encode(query).tolist()
+    
+    # Fetch more results to ensure diversity
     results = doc_collection.query.near_vector(
         near_vector=query_vector,
-        limit=max_chunks,
-        return_properties=["content"],
+        limit=max_chunks * 3,
+        return_properties=["content", "source_url", "filename"],
         certainty=0.3
     )
- 
-    # 🧩 Return in a clean consistent format
-    matches = [{"content": obj.properties.get("content", "")} for obj in results.objects]
-    return matches
- 
- 
+    
+    # Group by source
+    sources = {}
+    for obj in results.objects:
+        source = obj.properties.get("source_url") or obj.properties.get("filename", "unknown")
+        if source not in sources:
+            sources[source] = []
+        sources[source].append({
+            "content": obj.properties.get("content", ""),
+            "source": source,
+            "source_url": obj.properties.get("source_url"),
+            "filename": obj.properties.get("filename")
+        })
+    
+    # Balance results across sources (round-robin)
+    balanced_results = []
+    while len(balanced_results) < max_chunks and any(sources.values()):
+        for source in list(sources.keys()):
+            if sources[source]:
+                balanced_results.append(sources[source].pop(0))
+                if len(balanced_results) >= max_chunks:
+                    break
+    
+    return balanced_results
+
+
+
 # def clear_weaviate_data(client):
 #     # 🧹 Deleting all existing data
 #     try:
