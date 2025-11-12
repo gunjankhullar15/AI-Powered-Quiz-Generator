@@ -92,6 +92,9 @@ def generating_question_from_llm(topic : str,
         clean_data = clean_llm_response(raw_output)
         output_dict = {}
 
+        print("............................................")
+        print(clean_data)
+
 
         # for key, value in clean_data["response"].items():
         #     if key.startswith("person"):

@@ -30,7 +30,7 @@ def evaluating_user_answers(user_answer : dict, mcq_marks : int, truefalse_marks
     load_dotenv()
 
     model = ChatOpenAI(
-        api_key=os.getenv("OPENAI_API_KEY"),  # 👉 move this to .env
+        api_key=os.getenv("OPENAI_API_KEY"),  #  move this to .env
         model="gpt-4o-mini"
     )
     

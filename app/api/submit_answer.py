@@ -14,10 +14,8 @@ router = APIRouter()
 
 @router.post("/submit-answer/", description="Submit answers for evaluation")
 async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_db)):
-    print('Submitting answers...')
     try:
         # Fetch test details first to verify it exists
-        print('hi')
         test_result = await db.execute(
             select(Test).where(Test.t_id == result.t_id)
         )
@@ -44,7 +42,7 @@ async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_d
         # Convert responses dict to string for the LLM
         responses = result.responses
         
-        # If responses is already a dict, convert it to a JSON string
+        # # If responses is already a dict, convert it to a JSON string
         # if isinstance(responses, dict):
         #     responses_str = json.dumps(responses)
         # elif isinstance(responses, str):
