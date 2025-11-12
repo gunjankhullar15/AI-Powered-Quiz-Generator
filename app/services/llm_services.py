@@ -77,7 +77,7 @@ Level of difficulty: **Easy**
 2. The **output must be valid JSON only** (no markdown, no explanations outside JSON).
 3. Follow the **exact JSON structure** shown below.
 4. All string values must be wrapped in **double quotes**.
-5. Include accurate **answers**.
+5. Include accurate **answers** for MCQs, True/False, and Fill in the Blanks questions only (not for scenario-based questions)
 6. Skip any section if there’s insufficient data — do not leave blank or null fields.
 7. Ensure that questions are content-based only — do not generate questions related to author names, page numbers, indices, or other metadata.
 8. Each person MUST have equal questions from article and PDF content.
@@ -89,7 +89,7 @@ Level of difficulty: **Easy**
     "people": 1,
   
     "person 1": {{
-    "mcq": [
+    "all mcq questions": [
       {{
         "question": "What is the primary function of inductive bias in a learning algorithm?",
         "option 1": "To reduce the complexity of the hypothesis space",
@@ -102,14 +102,14 @@ Level of difficulty: **Easy**
     ],
   
   
-    "scenario": [
+    "all scenario questions": [
       {{
         "question": "Imagine a company wants to use AI to predict employee turnover. What data should they collect and why?"
       }}
     ],
   
   
-    "true/false": [
+    "all true/false questions": [
       {{
         "question": "Supervised learning requires labeled data.",
         "option 1": "True",
@@ -120,7 +120,7 @@ Level of difficulty: **Easy**
     ],
   
   
-    "fill in the blanks": [
+    "all fill in the blanks questions": [
       {{
         "question": "In machine learning, ________ is used to evaluate the performance of a model.",
         "answer": "cross-validation",

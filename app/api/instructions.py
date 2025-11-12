@@ -51,7 +51,8 @@ Please read the instructions carefully before you begin.
 1. You must attempt **all questions** in the test.
 2. You **cannot skip** a question; you must have to attempt all the question.
 3. In case of **internet or system interruption**, your test will be **automatically submitted**.
-4. Please ensure a **stable internet connection** and attempt the test carefully.
+4. **Exiting fullscreen mode will immediately submit your test.**
+5. Please ensure a **stable internet connection** and attempt the test carefully.
 
 ✅ **Good luck with your test!**
 """

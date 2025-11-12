@@ -83,6 +83,7 @@ important note:
 - you have to give me the marks of MCQ, True and false, fill in the blanks from 1 means the output should be 1 or 0.
 - you have to give me the marks of scenario based from {scenario_based_marks} means eg : 2,2.5,3,1.
 - also keep in mind that if the answer of fill in the blanks and scenario based question is not related then simply give the marks 0.
+- if user_answer has null value then simply give zero marks for that particular question.
 - Only give the output do not give the explanation.
 - the output should be in strict json format only.
 
