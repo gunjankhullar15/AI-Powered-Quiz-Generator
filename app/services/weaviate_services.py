@@ -12,7 +12,11 @@ client = weaviate.connect_to_local()
 if not client.collections.exists("Document"):
     client.collections.create(
         name="Document",
-        properties=[wvc.config.Property(name="content", data_type=wvc.config.DataType.TEXT)],
+        properties=[
+            wvc.config.Property(name="content", data_type=wvc.config.DataType.TEXT),
+            wvc.config.Property(name="source_url", data_type=wvc.config.DataType.TEXT),
+            wvc.config.Property(name="filename", data_type=wvc.config.DataType.TEXT),
+        ],
         vectorizer_config=wvc.config.Configure.Vectorizer.none()
     )
  
@@ -122,25 +126,61 @@ def search_in_weaviate(query: str, max_chunks: int = 10):
 #     except Exception as e:
 #         return f"⚠️ Failed to delete old data: {e}"
 
+# def clear_weaviate_data(client):
+#     try:
+#         collections = client.collections.list_all()
+#         if "Document" not in collections:
+#             return "'Document' collection does not exist."
+
+#         collection = client.collections.get("Document")
+
+#         try:
+#             count_result = collection.aggregate.over_all()
+#             total_objects = count_result.objects[0].total_count if count_result.objects else 0
+#         except Exception:
+#             total_objects = None
+
+#         client.collections.delete("Document")
+
+#         if total_objects:
+#             return f"Cleared all {total_objects} objects from the 'Document' collection."
+#         else:
+#             return "Cleared all objects from the 'Document' collection."
+#     except Exception as e:
+#         return f"Failed to delete old data: {e}"
+
+
 def clear_weaviate_data(client):
     try:
+        
         collections = client.collections.list_all()
-        if "Document" not in collections:
-            return "'Document' collection does not exist."
+        total_objects = 0
+        
+        if "Document" in collections:
+            collection = client.collections.get("Document")
+            try:
+                count_result = collection.aggregate.over_all()
+                total_objects = count_result.objects[0].total_count if count_result.objects else 0
+            except Exception:
+                total_objects = 0
+             
+            
+            client.collections.delete("Document")
 
-        collection = client.collections.get("Document")
+        client.collections.create(
+            name="Document",
+            properties=[
+                wvc.config.Property(name="content", data_type=wvc.config.DataType.TEXT),
+                wvc.config.Property(name="source_url", data_type=wvc.config.DataType.TEXT),
+                wvc.config.Property(name="filename", data_type=wvc.config.DataType.TEXT),
+            ],
+            vectorizer_config=wvc.config.Configure.Vectorizer.none()
+        )
 
-        try:
-            count_result = collection.aggregate.over_all()
-            total_objects = count_result.objects[0].total_count if count_result.objects else 0
-        except Exception:
-            total_objects = None
-
-        client.collections.delete("Document")
-
-        if total_objects:
-            return f"Cleared all {total_objects} objects from the 'Document' collection."
+        if total_objects > 0:
+            return f"Cleared {total_objects} objects and reset 'Document' schema."
         else:
-            return "Cleared all objects from the 'Document' collection."
+            return "Reset 'Document' schema (was empty)."
+
     except Exception as e:
-        return f"Failed to delete old data: {e}"
+        return f"Failed to reset data: {e}"

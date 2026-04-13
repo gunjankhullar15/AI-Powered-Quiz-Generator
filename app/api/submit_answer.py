@@ -101,10 +101,12 @@ async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_d
         result_data = {
             "full_name": employee.full_name,
             "emp_code": employee.emp_code,
+            "test_name": test.test_name,
             "score": total_marks_obtained,
             "percentage": f"{round(percentage, 2)}%",
             "total_marks": test.max_marks,
             "status": "Pass" if total_marks_obtained >= test.passing_marks else "Fail",
+            "attempted": existing.attempted if existing else 1 
             #"detailed_marks": user_marks
         }
 

@@ -92,7 +92,9 @@ Please read the instructions carefully before you begin.
             "instructions": instruction_page,
             "emp_code": employee.emp_code,
             "test_id": test.t_id,
-            "q_id": existing_assignment.q_id
+            "q_id": existing_assignment.q_id,
+            "title": test.test_name,
+            "duration": test.duration,
         }
 
     question_result = await db.execute(

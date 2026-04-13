@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas import TestCreate, QuestionCreate
 from app.models import Test, Question
 from app.utils.database import get_db
-from app.services.generate_question import generating_question_from_llm
+from app.services.generate_question import generating_question_from_llm, generating_question_from_llm_batched
 import json
 from app.utils.test_link_generator import generate_test_link
 
@@ -52,7 +52,7 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
         await db.commit() 
 
                # Generate questions using LLM
-        llm_response = generating_question_from_llm(
+        llm_response = await generating_question_from_llm_batched(
             topic=test.topic,
             mcq_questions=test.no_of_mcq,
             sch_questions=test.no_scenario_based,
@@ -64,12 +64,21 @@ async def create_test(test: TestCreate, db: AsyncSession = Depends(get_db)):
         if not isinstance(llm_response, dict):
             raise HTTPException(status_code=500, detail="Invalid LLM response format.")
 
+        if llm_response.get("status") == "error":
+            raise HTTPException(status_code=500, detail=llm_response.get("message", "Question generation failed"))
+
+        # Extract the combined results
+        combined_results = llm_response.get("combined_results", {})
+        
+        if not combined_results:
+            raise HTTPException(status_code=500, detail="No questions generated")
+
 
         # Store questions in database
         question_rows = []
         
         # Iterate through each person
-        for person_key, person_questions in llm_response.items():
+        for person_key, person_questions in combined_results.items():
             if person_key.startswith("person"):
                 # Store all questions for this person in a single row
                 question_row = Question(
