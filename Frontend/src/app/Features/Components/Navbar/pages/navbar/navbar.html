@@ -1,0 +1,35 @@
+ <!-- Header Section -->
+  <div class="header">
+    <div class="logo-section">
+      <img src="assets/Images/Netsmartzlatest.png" alt="Logo" class="logo">
+    </div>
+
+
+
+    <!-- <button mat-icon-button class="user-icon">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+  </div> -->
+
+
+
+   <div class="user-menu">
+    <button mat-icon-button 
+            [matMenuTriggerFor]="userMenu"
+            class="user-icon"
+            matTooltip="User Menu">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item disabled class="user-name-item">
+        <span>User Profile</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="openLogoutDialog()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </div>
+</div>

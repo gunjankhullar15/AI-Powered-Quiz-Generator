@@ -1,0 +1,187 @@
+
+<div *ngIf="isSubmitting" class="submit-loader-overlay">
+  <div class="submit-loader-container">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Processing your answers...</p>
+    <p class="loader-subtext">Please wait while we evaluate your test</p>
+  </div>
+</div>
+
+<app-user-navbar></app-user-navbar>
+
+
+<div class="main-content">
+  <div class="container">
+ 
+    <div *ngIf="loading" class="state-container active">
+      <div class="spinner"></div>
+      <p>Loading questions...</p>
+    </div>
+
+    <div *ngIf="error && !loading" class="state-container active">
+      <div class="error-icon-wrapper">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <p class="error-message">Failed to load questions. {{ errorMessage }}</p>
+      <button class="retry-button" (click)="fetchQuestions()">Retry</button>
+    </div>
+
+  
+    <div *ngIf="submitted" class="state-container active">
+      <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <h1>Test Submitted!</h1>
+      <p>Your test has been successfully submitted.</p>
+    </div>
+
+ 
+    <div *ngIf="!loading && !error && !submitted && questions" class="quiz-card">
+      
+      <div class="test-header">
+        <h1 class="test-title">{{ testTitle}}</h1>
+        <div class="test-stats">
+          <div class="stat-item">
+            <span class="stat-icon"><mat-icon>cancel</mat-icon></span>
+            <span class="stat-label">Unattempted Questions:</span>
+            <span class="stat-value">{{ unAttemptedCount }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon"><mat-icon>check</mat-icon></span>
+            <span class="stat-label">Attempted Questions:</span>
+            <span class="stat-value">{{ attemptedCount }}</span>
+          </div>
+          <div class="stat-item timer-stat">
+            <span class="stat-icon"><mat-icon>alarm</mat-icon></span>
+            <span class="stat-label">Time:</span>
+            <span class="stat-value timer">{{ timerDisplay }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="questions-layout">
+        
+        <div class="question-navigation-box">
+          <h3 class="nav-title"></h3>
+          <div class="question-numbers">
+            <button
+              *ngFor="let nav of questionNavigation"
+              class="question-number-btn"
+              [class.active]="currentQuestionIndex === nav.index"
+              [class.answered]="nav.isAnswered"
+              (click)="loadQuestion(nav.index)"
+            >
+              {{ nav.index + 1 }}
+            </button>
+          </div>
+        </div>
+
+        <div class="question-content-box" *ngIf="currentQuestion">
+          
+          <div class="question-header-display">
+            <span class="question-number-display">Q{{ currentQuestionIndex + 1 }}</span>
+            <span class="question-type-badge">{{ currentQuestion.type }}</span>
+          </div>
+
+         
+          <div class="question-text-box">
+            {{ currentQuestion.question }} <span class="required-asterisk">*</span>
+          </div>
+
+          <div *ngIf="currentQuestion.type === 'mcq'" class="options-container">
+            <label 
+              class="option-item" 
+              *ngFor="let optNum of optionNumbers"
+              [class.selected]="getCurrentAnswer('mcq', currentQuestion.questionIndex) === getOptionValue(currentQuestion, optNum)"
+            >
+              <input
+                type="radio"
+                [name]="'mcq-' + currentQuestion.questionIndex"
+                [value]="getOptionValue(currentQuestion, optNum)"
+                [checked]="getCurrentAnswer('mcq', currentQuestion.questionIndex) === getOptionValue(currentQuestion, optNum)"
+                (change)="setAnswer('mcq', currentQuestion.questionIndex, getOptionValue(currentQuestion, optNum))"
+              />
+              <span class="option-text">{{ getOptionValue(currentQuestion, optNum) }}</span>
+            </label>
+          </div>
+
+          <div *ngIf="currentQuestion.type === 'true/false'" class="options-container">
+            <label 
+              class="option-item" 
+              *ngFor="let option of tfOptions"
+              [class.selected]="getCurrentAnswer('true/false', currentQuestion.questionIndex) === option"
+            >
+              <input
+                type="radio"
+                [name]="'tf-' + currentQuestion.questionIndex"
+                [value]="option"
+                [checked]="getCurrentAnswer('true/false', currentQuestion.questionIndex) === option"
+                (change)="setAnswer('true/false', currentQuestion.questionIndex, option)"
+              />
+              <span class="option-text">{{ option }}</span>
+            </label>
+          </div>
+
+          <div *ngIf="currentQuestion.type === 'fill in the blanks'" class="input-area">
+            <input
+              type="text"
+              placeholder="Start typing..."
+              [value]="getCurrentAnswer('fill in the blanks', currentQuestion.questionIndex)"
+              (input)="setAnswer('fill in the blanks', currentQuestion.questionIndex, $any($event.target).value)"
+              class="text-input-field"
+            />
+          </div>
+
+          <div *ngIf="currentQuestion.type === 'scenario'" class="input-area">
+            <textarea
+              placeholder="Start typing..."
+              [value]="getCurrentAnswer('scenario', currentQuestion.questionIndex)"
+              (input)="setAnswer('scenario', currentQuestion.questionIndex, $any($event.target).value)"
+              rows="8"
+              class="textarea-input-field"
+            ></textarea>
+          </div>
+
+          <div class="nav-buttons-container">
+            <button 
+              class="nav-button prev-button" 
+              [disabled]="currentQuestionIndex === 0"
+              (click)="loadQuestion(currentQuestionIndex - 1)"
+            >
+              ← Previous
+            </button>
+            <button 
+              class="nav-button next-button" 
+              [disabled]="currentQuestionIndex === questionNavigation.length - 1"
+              (click)="loadQuestion(currentQuestionIndex + 1)"
+            >
+              Next →
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="submit-section">
+        <button 
+          class="submit-btn" 
+          [class.disabled]="!allQuestionsAnswered"
+          [disabled]="!allQuestionsAnswered || loading || submitted"
+          (click)="submitTest()"
+        >
+          {{ submitButtonMessage }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="footer-section">
+  <p>Powered by BYT strategy group</p>
+</footer>
