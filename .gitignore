@@ -56,8 +56,6 @@ var/
 *.egg
 
 # PyInstaller
-# Usually these files are written by a python script from a template
-# before PyInstaller builds the exe, so as to inject date/other infos
 *.manifest
 *.spec
 
@@ -107,11 +105,14 @@ yarn-error.log*
 tmp/
 temp/
 alembic/versions/*.pyc
-alembic/versions/__pycache__/   
+alembic/versions/__pycache__/
 alembic/env.pyc
 alembic/__pycache__/
 alembic.ini
 alembic/
 
 app/services/llm_services_async.py
-app/services/generate_question_async.py
+app/services/generate_question_async.pyw
+
+# IIS config
+web.config
