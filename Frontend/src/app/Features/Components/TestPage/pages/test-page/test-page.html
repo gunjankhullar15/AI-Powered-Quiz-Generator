@@ -1,0 +1,232 @@
+<!-- Navbar (Already exists - don't modify) -->
+
+<!-- ✅ SUBMIT LOADER OVERLAY -->
+<div *ngIf="isSubmitting" class="submit-loader-overlay">
+  <div class="submit-loader-container">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Processing your answers...</p>
+    <p class="loader-subtext">Please wait while we evaluate your test</p>
+  </div>
+</div>
+
+<!-- <app-navbar></app-navbar> -->
+  <app-user-navbar></app-user-navbar>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container">
+    <!-- Quiz Card -->
+    <div class="quiz-card">
+      <!-- Test Header -->
+      <div class="test-header">
+        <h1 class="test-title">Java Fundamentals</h1>
+        <div class="test-stats">
+          <div class="stat-item">
+            <span class="stat-label">Unattempted Questions:</span>
+            <span class="stat-value">{{ unAttemptedCount }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Attempted Questions:</span>
+            <span class="stat-value">{{ attemptedCount }}</span>
+          </div>
+          <div class="stat-item timer-stat">
+            <span class="stat-label">Time:</span>
+            <span class="stat-value timer">{{ timerDisplay }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions Area -->
+      <div class="questions-area">
+        <!-- Loading State -->
+        <div [ngClass]="{ 'state-container': true, 'active': loading }">
+          <div class="spinner"></div>
+          <p>Loading questions...</p>
+        </div>
+
+        <!-- Error State -->
+        <div [ngClass]="{ 'state-container': true, 'active': error && !loading }">
+          <div class="error-icon-wrapper">
+            <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <p class="error-message">Failed to load questions. {{ errorMessage }}</p>
+          <button class="retry-button" (click)="fetchQuestions()">Retry</button>
+        </div>
+
+        <!-- Success State -->
+        <div [ngClass]="{ 'state-container': true, 'active': submitted }">
+          <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <h1>Test Submitted!</h1>
+          <p>Your test has been successfully submitted.</p>
+        </div>
+
+        <!-- Questions Container -->
+        <div [ngClass]="{ 'questions-container': true, 'active': !loading && !error && !submitted && questions }">
+          <ng-container *ngIf="currentPersonData">
+            <!-- Unified Question List -->
+
+            <!-- MCQ Questions -->
+            <div class="question-item" *ngFor="let question of currentPersonData.mcq; let idx = index">
+              <div class="question-text">Q{{ idx + 1 }}. {{ question.question }}</div>
+              <div class="options-group">
+                <label class="option-label" *ngFor="let optNum of optionNumbers">
+                  <input
+                    type="checkbox"
+                    [name]="'mcq-' + idx"
+                    [value]="getOptionValue(question, optNum)"
+                    [checked]="getCurrentAnswer('mcq', idx) === getOptionValue(question, optNum)"
+                    (change)="setAnswer('mcq', idx, getOptionValue(question, optNum))"
+                  />
+                  <span>{{ getOptionValue(question, optNum) }}</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- True/False Questions -->
+            <div class="question-item" *ngFor="let question of currentPersonData['true/false']; let idx = index">
+              <div class="question-text">
+                Q{{ (currentPersonData.mcq?.length || 0) + idx + 1 }}. {{ question.question }}
+              </div>
+              <div class="options-group">
+                <label class="option-label" *ngFor="let option of tfOptions">
+                  <input
+                    type="checkbox"
+                    [name]="'tf-' + idx"
+                    [value]="option"
+                    [checked]="getCurrentAnswer('true/false', idx) === option"
+                    (change)="setAnswer('true/false', idx, option)"
+                  />
+                  <span>{{ option }}</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Fill in the Blanks Questions -->
+            <div class="question-item" *ngFor="let question of currentPersonData['fill in the blanks']; let idx = index">
+              <div class="question-text">
+                Q{{ (currentPersonData.mcq?.length || 0) + (currentPersonData['true/false']?.length || 0) + idx + 1 }}.
+                {{ question.question }}
+              </div>
+              <input
+                type="text"
+                placeholder="Start typing..."
+                [value]="getCurrentAnswer('fill in the blanks', idx)"
+                (input)="setAnswer('fill in the blanks', idx, $any($event.target).value)"
+                class="text-input"
+              />
+            </div>
+
+            <!-- Scenario Questions -->
+            <div class="question-item" *ngFor="let question of currentPersonData.scenario; let idx = index">
+              <div class="question-text">
+                Q{{ (currentPersonData.mcq?.length || 0) + (currentPersonData['true/false']?.length || 0) + (currentPersonData['fill in the blanks']?.length || 0) + idx + 1 }}.
+                {{ question.question }}
+              </div>
+              <textarea
+                placeholder="Start typing..."
+                [value]="getCurrentAnswer('scenario', idx)"
+                (input)="setAnswer('scenario', idx, $any($event.target).value)"
+                rows="5"
+                class="textarea-input"
+              ></textarea>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-container" *ngIf="!loading && !error && !submitted && questions">
+        <button 
+          class="submit-button" 
+          [class.disabled]="!allQuestionsAnswered"
+          [disabled]="!allQuestionsAnswered || loading || submitted"
+          (click)="submitTest()"
+          [title]="!allQuestionsAnswered ? 'Please answer all questions before submitting' : 'Click to submit test'"
+        >
+          {{ submitButtonMessage }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer (Already exists - don't modify) -->
+<footer class="footer-section">
+  <p>Powered by BYT strategy group</p>
+</footer>
+
+
+<style>
+  /* ✅ SUBMIT LOADER STYLES */
+  .submit-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+  }
+
+  .submit-loader-container {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .loader-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #ff9500;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loader-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+  }
+
+  .loader-subtext {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+</style>

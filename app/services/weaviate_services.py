@@ -6,11 +6,7 @@ from sentence_transformers import SentenceTransformer
 transformer = SentenceTransformer('all-MiniLM-L6-v2')
  
 # ✅ Connect once
-#client = weaviate.connect_to_local()
-client = weaviate.connect_to_local(
-    port=8081,
-    grpc_port=50051
-)
+client = weaviate.connect_to_local()
  
 # ✅ Create collection if not exists
 if not client.collections.exists("Document"):

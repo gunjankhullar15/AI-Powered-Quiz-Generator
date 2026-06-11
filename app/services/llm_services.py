@@ -189,7 +189,7 @@ Do **not** include anything outside the JSON.
     logger.info("Sending prompt to LLM...")
     response1 = model.invoke(unified_prompt)
     logger.info("LLM response received.")
-    # print("response1:", response1.content)
+    print("response1:", response1.content)
     return {"response": response1.content}
 
 
@@ -518,7 +518,7 @@ You MUST use concepts, information, and terminology from BOTH sources.
         logger.info(f"All batches merged. Total people generated: {len(merged_output) - 1}")
 
         # ✅ Return same format as original function
-        # print("merged_output:", merged_output)
+        print("merged_output:", merged_output)
         return {"response": merged_output}
 
     except Exception as e:

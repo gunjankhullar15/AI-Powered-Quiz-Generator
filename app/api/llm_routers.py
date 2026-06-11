@@ -45,11 +45,11 @@ def get_llm_output(
             if useall_content:
                 logger.info("Fetching all PDF content from Weaviate")
                 search_results = search_in_weaviate("*")   #  Fetch all content
-                # print(search_results)
+                print(search_results)
             else:
                 logger.info(f"Fetching topic-specific chunks for topic: {topic}")
                 search_results = search_in_weaviate(topic)
-                # print(search_results)
+                print(search_results)
  
             if not search_results or len(search_results) == 0:
                 raise HTTPException(status_code=404, detail="No content found in Weaviate for the given query.")
@@ -90,12 +90,12 @@ def get_llm_output(
         if len(output_dict) != total_people:
             return "Question are not generated properly"
 
-        # print(len(output_dict))
-        # print(type(output_dict))
-        # print(output_dict)
+        print(len(output_dict))
+        print(type(output_dict))
+        print(output_dict)
 
-        # for key in output_dict:
-        #   print(key)
+        for key in output_dict:
+          print(key)
  
         return clean_data
  

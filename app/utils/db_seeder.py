@@ -5,7 +5,7 @@ from app.models.weightage import Weightage
 
 async def seed_fixed_weightages():
     """Seed fixed global weightage values when app starts"""
-    # print(" Setting fixed global weightage values...")
+    print(" Setting fixed global weightage values...")
     
     async with AsyncSessionLocal() as session:
         try:
@@ -14,7 +14,7 @@ async def seed_fixed_weightages():
             existing_weightages = result.scalars().all()
             
             if existing_weightages:
-                # print(" Fixed weightages already exist in database.")
+                print(" Fixed weightages already exist in database.")
                 return
             
             # Fixed global weightage values (same for all tests)
@@ -29,11 +29,11 @@ async def seed_fixed_weightages():
             for weightage_data in fixed_weightages:
                 weightage = Weightage(**weightage_data)
                 session.add(weightage)
-                # print(f" Set {weightage_data['question_type']}: {weightage_data['weightage']} points")
+                print(f" Set {weightage_data['question_type']}: {weightage_data['weightage']} points")
             
             await session.commit()
-            # print(" Fixed global weightage values set successfully!")
+            print(" Fixed global weightage values set successfully!")
             
         except Exception as e:
             await session.rollback()
-            # print(f" Error setting weightages: {e}")
+            print(f" Error setting weightages: {e}")

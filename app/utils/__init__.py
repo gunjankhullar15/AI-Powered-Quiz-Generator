@@ -10,7 +10,7 @@ from app.models.results import Result
 def init_db():
     # Create all tables
     Base.metadata.create_all(bind=async_engine)
-    # print("Database tables created successfully!")
+    print("Database tables created successfully!")
 
 if __name__ == "__main__":
     init_db()
