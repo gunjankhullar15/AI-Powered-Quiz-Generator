@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+        <rewrite>
+            <rules>
+                <rule name="Reverse Proxy to Uvicorn" enabled="true" stopProcessing="true">
+                    <match url="(.*)" />
+                    <action type="Rewrite" url="http://localhost:<PORT>/{R:0}" />
+                </rule>
+            </rules>
+        </rewrite>
+
+        <handlers>
+            <add name="<PROJECT-NAME>-handler"
+                path="*"
+                verb="*"
+                modules="FastCgiModule"
+                scriptProcessor="<PATH_TO_PROJECT>\venv\Scripts\python.exe|<PATH_TO_PROJECT>\venv\Lib\site-packages\wfastcgi.py"
+                resourceType="Unspecified" />
+        </handlers>
+    </system.webServer>
+</configuration>
