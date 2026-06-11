@@ -37,11 +37,11 @@ def generating_question_from_llm(topic : str,
             if useall_content:
                 logger.info("Fetching all PDF content from Weaviate")
                 search_results = search_in_weaviate("*")   #  Fetch all content
-                print(search_results)
+                # print(search_results)
             else:
                 logger.info(f"Fetching topic-specific chunks for topic: {topic}")
                 search_results = search_in_weaviate(topic)
-                print(search_results)
+                # print(search_results)
  
             if not search_results or len(search_results) == 0:
                 raise HTTPException(status_code=404, detail="No content found in Weaviate for the given query.")

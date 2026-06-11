@@ -14,10 +14,10 @@ router = APIRouter()
 
 @router.post("/submit-answer/", description="Submit answers for evaluation")
 async def submit_answer(result: ResponseSchema, db: AsyncSession = Depends(get_db)):
-    print('Submitting answers...')
+    # print('Submitting answers...')
     try:
         # Fetch test details first to verify it exists
-        print('hi')
+        # print('hi')
         test_result = await db.execute(
             select(Test).where(Test.t_id == result.t_id)
         )

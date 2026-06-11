@@ -3,7 +3,7 @@ services:
   weaviate:
     image: semitechnologies/weaviate:latest
     ports:
-      - "8080:8080"   # REST
+      - "8081:8080"   # REST
       - "50051:50051" # gRPC
     environment:
       QUERY_DEFAULTS_LIMIT: 20

@@ -32,6 +32,8 @@ async def get_candidates(test_id: int, db: AsyncSession = Depends(get_db)):
     
     result = await db.execute(query)
     candidates = result.scalars().all()
+
+    print(candidates)
     
     
     if not candidates:
@@ -42,7 +44,7 @@ async def get_candidates(test_id: int, db: AsyncSession = Depends(get_db)):
     
     candidates_list = [
         {
-            "employee_id": candidate.emp_id,
+            "employee_id": candidate.employee.emp_code,
             "employee_name": candidate.employee.full_name,
             "test_id": candidate.t_id,
             "score": candidate.score,
